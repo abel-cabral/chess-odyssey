@@ -20,6 +20,7 @@ class Sprite(animation.Animation):
     def __init__(self, image_file, frames=1):
         # Parent's constructor must be first-called
         animation.Animation.__init__(self, image_file, frames)
+        self.image_file = image_file
 
     """Permite a movimentação com o teclado no eixo X"""
     def move_key_x(self, speed):
