@@ -6,7 +6,6 @@ import time
 import pygame
 from . import window
 from . import animation
-from pygame.locals import *
 
 # Initializes pygame's modules
 pygame.init()
@@ -17,10 +16,11 @@ class Sprite(animation.Animation):
     Caso seja dado apenas o nome da imagem, será criada uma Animation
     com 1 frame apenas.
     """
-    def __init__(self, image_file, frames=1):
+    def __init__(self, image_file, cor=0, frames=1):
         # Parent's constructor must be first-called
         animation.Animation.__init__(self, image_file, frames)
         self.image_file = image_file
+        self.cor = cor
 
     """Permite a movimentação com o teclado no eixo X"""
     def move_key_x(self, speed):

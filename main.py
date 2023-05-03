@@ -1,9 +1,7 @@
-import pygame.event
 from PPlay.window import *
 from PPlay.gameimage import *
 from PPlay.sprite import *
 from PPlay.gameimage import *
-from pygame.locals import *
 
 window_size = 600
 
@@ -11,31 +9,31 @@ window_size = 600
 def piece_path():
     class PiecePath:
         def __init__(self):
-            self.pawnB = [Sprite("assets/blackPawn.png") for i in range(8)]
+            self.pawnB = [Sprite("assets/blackPawn.png", cor=1) for i in range(8)]
             self.pawnW = [Sprite("assets/whitePawn.png") for i in range(8)]
 
-            self.rookB1 = Sprite("assets/blackRook.png")
-            self.rookB2 = Sprite("assets/blackRook.png")
+            self.rookB1 = Sprite("assets/blackRook.png", cor=1)
+            self.rookB2 = Sprite("assets/blackRook.png", cor=1)
 
             self.rookW1 = Sprite("assets/whiteRook.png")
             self.rookW2 = Sprite("assets/whiteRook.png")
 
-            self.knightB1 = Sprite("assets/blackKnight.png")
-            self.knightB2 = Sprite("assets/blackKnight.png")
+            self.knightB1 = Sprite("assets/blackKnight.png", cor=1)
+            self.knightB2 = Sprite("assets/blackKnight.png", cor=1)
 
             self.knightW1 = Sprite("assets/whiteKnight.png")
             self.knightW2 = Sprite("assets/whiteKnight.png")
 
-            self.bishopB1 = Sprite("assets/blackBishop.png")
-            self.bishopB2 = Sprite("assets/blackBishop.png")
+            self.bishopB1 = Sprite("assets/blackBishop.png", cor=1)
+            self.bishopB2 = Sprite("assets/blackBishop.png", cor=1)
 
             self.bishopW1 = Sprite("assets/whiteBishop.png")
             self.bishopW2 = Sprite("assets/whiteBishop.png")
 
-            self.kingB = Sprite("assets/blackKing.png")
+            self.kingB = Sprite("assets/blackKing.png", cor=1)
             self.kingW = Sprite("assets/whiteKing.png")
 
-            self.queenB = Sprite("assets/blackQueen.png")
+            self.queenB = Sprite("assets/blackQueen.png", cor=1)
             self.queenW = Sprite("assets/whiteQueen.png")
     return PiecePath()
 
@@ -57,6 +55,7 @@ def main():
     # Define as cores que serão usadas no jogo
     BRANCO = (255, 255, 255)
     PRETO = (110, 58, 41)
+    VERMELHO = (255, 0, 0)
     
     # Movimentacao
     ORIGEM = None
@@ -64,6 +63,9 @@ def main():
 
     # Define o tamanho de cada quadrado do tabuleiro
     TAMANHO_QUADRADO = window_size / 8
+    
+    # Armazena a posição do quadrado selecionado
+    quadrado_selecionado = None
 
     # Carrega a imagem da peça
 
@@ -95,6 +97,10 @@ def main():
                 cor = BRANCO if (linha + coluna) % 2 == 0 else PRETO
                 pygame.draw.rect(janela, cor, (x, y, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
 
+                # Verifica se o quadrado atual está selecionado e desenha um quadrado vermelho sobre ele
+                if (linha, coluna) == quadrado_selecionado:
+                    pygame.draw.rect(janela, VERMELHO, (x, y, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
+
                 # Desenha a peça na posição inicial correspondente na matriz
                 if tabuleiro[linha] is not None and tabuleiro[linha][coluna] is not None:
                     peca_imagem = pygame.image.load(tabuleiro[linha][coluna].image_file)
@@ -118,17 +124,21 @@ def main():
                 col = int(mouse_pos[0] // TAMANHO_QUADRADO)
                 row = int(mouse_pos[1] // TAMANHO_QUADRADO)
 
-                if tabuleiro[row][col] is not None:
+                
+                if ORIGEM is None:
+                    # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem
                     ORIGEM = (row, col)
-                else:
-                    DESTINO = (row, col)      
-
-                if ORIGEM is not None and DESTINO is not None:
-                    tabuleiro = mover_elemento(tabuleiro, ORIGEM, DESTINO)
+                    if tabuleiro[ORIGEM[0]][ORIGEM[1]] is not None:
+                        quadrado_selecionado = ORIGEM
+                elif DESTINO is None:
+                    # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem
+                    DESTINO = (row, col)
+                    quadrado_selecionado = None
+                    if tabuleiro[DESTINO[0]][DESTINO[1]] is None or tabuleiro[ORIGEM[0]][ORIGEM[1]].cor != tabuleiro[DESTINO[0]][DESTINO[1]].cor:
+                        tabuleiro = mover_elemento(tabuleiro, ORIGEM, DESTINO)
                     # Zera movimentacao
                     ORIGEM = None
                     DESTINO = None
-                    
         # Atualiza a tela
         pygame.display.update()
 
