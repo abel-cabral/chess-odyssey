@@ -12,6 +12,7 @@ class Peca():
     def __init__(self, sprite, tipo):
         self.sprite = sprite
         self.tipo = tipo
+        self.primeiro_movimento = True
     
     def movimento(self, posicao, tabuleiro):
         match self.tipo:

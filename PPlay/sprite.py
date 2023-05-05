@@ -6,4 +6,3 @@ class Sprite():
     def __init__(self, image_file, cor):
         self.image_file = image_file
         self.cor = cor
-        self.primeiro_movimento = True
