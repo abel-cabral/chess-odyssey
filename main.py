@@ -1,45 +1,11 @@
+
+import sys
 import pygame as pygame
-from PPlay.chess_type import Peca
-from PPlay.window import *
-from PPlay.gameimage import *
 from PPlay.sprite import *
-from PPlay.gameimage import *
+from PPlay.board import Board
 
 window_size = 600
-
-
-def piece_path():
-    class PiecePath:
-        def __init__(self):
-            self.pawnB = [Peca(Sprite("assets/blackPawn.png", cor=2), 6) for i in range(8)]
-            self.pawnW = [Peca(Sprite("assets/whitePawn.png", cor=1), 6) for i in range(8)]
-
-            self.rookB1 = Peca(Sprite("assets/blackRook.png", cor=2), 5)
-            self.rookB2 = Peca(Sprite("assets/blackRook.png", cor=2), 5)
-
-            self.rookW1 = Peca(Sprite("assets/whiteRook.png", cor=1), 5)
-            self.rookW2 = Peca(Sprite("assets/whiteRook.png", cor=1), 5)
-
-            self.knightB1 = Peca(Sprite("assets/blackKnight.png", cor=2), 4)
-            self.knightB2 = Peca(Sprite("assets/blackKnight.png", cor=2), 4)
-
-            self.knightW1 = Peca(Sprite("assets/whiteKnight.png", cor=1), 4)
-            self.knightW2 = Peca(Sprite("assets/whiteKnight.png", cor=1), 4)
-
-            self.bishopB1 = Peca(Sprite("assets/blackBishop.png", cor=2), 3)
-            self.bishopB2 = Peca(Sprite("assets/blackBishop.png", cor=2), 3)
-
-            self.bishopW1 = Peca(Sprite("assets/whiteBishop.png", cor=1), 3)
-            self.bishopW2 = Peca(Sprite("assets/whiteBishop.png", cor=1), 3)
-
-            self.kingB = Peca(Sprite("assets/blackKing.png", cor=2), 1)
-            self.kingW = Peca(Sprite("assets/whiteKing.png", cor=1), 1)
-
-            self.queenB = Peca(Sprite("assets/blackQueen.png", cor=2), 2)
-            self.queenW = Peca(Sprite("assets/whiteQueen.png", cor=1), 2)
-
-    return PiecePath()
-
+player = 0  # 0 jogador branco, 1 jogador preto.
 
 def draw_landscape(pieces):
     for x in range(len(pieces)):
@@ -60,7 +26,6 @@ def main():
     # Movimentacao
     ORIGEM = None
     DESTINO = None
-    PLAYER = 1
 
     # Define o tamanho de cada quadrado do tabuleiro
     TAMANHO_QUADRADO = window_size / 8
@@ -71,20 +36,9 @@ def main():
     # Carrega a imagem da peça
     update_screen = True
     has_board = False
-
+    
     # Cria o tabuleiro do jogo
-    pieces = piece_path()
-    tabuleiro = [
-        [pieces.rookB1, pieces.knightB1, pieces.bishopB1, pieces.queenB, pieces.kingB, pieces.bishopB2, pieces.knightB2,
-         pieces.rookB2],
-        pieces.pawnB,
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None],
-        pieces.pawnW,
-        [pieces.rookW1, pieces.knightW1, pieces.bishopW1, pieces.queenW, pieces.kingW, pieces.bishopW2, pieces.knightW2,
-         pieces.rookW2]]
+    BOARD = Board(pygame)
 
     # Cria um objeto Clock para limitar a taxa de quadros do jogo
     clock = pygame.time.Clock()
@@ -103,89 +57,55 @@ def main():
                 col = int(mouse_pos[0] // TAMANHO_QUADRADO)
                 row = int(mouse_pos[1] // TAMANHO_QUADRADO)
 
-                if ORIGEM is None:
+                if BOARD.origem is None:
                     # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem, so pode ser uma das suas peças
-                    if tabuleiro[row][col] is not None and tabuleiro[row][col].sprite.cor == PLAYER:
-                        ORIGEM = (row, col)
-                        quadrado_selecionado = ORIGEM
-                elif DESTINO is None:
-                    # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem
-                    DESTINO = (row, col)
-
-                if ORIGEM is not None and DESTINO is not None:
-                    # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem
-                    DESTINO = (row, col)
-                    if tabuleiro[DESTINO[0]][DESTINO[1]] is None or tabuleiro[ORIGEM[0]][ORIGEM[1]].sprite.cor != \
-                            tabuleiro[DESTINO[0]][DESTINO[1]].sprite.cor:
-                        tabuleiro = mover_elemento(tabuleiro, ORIGEM, DESTINO)
+                    if BOARD.tabuleiro[row][col] is not None and BOARD.tabuleiro[row][col].sprite.cor == player:
+                        # A peça tem movimentação?
+                        BOARD.origem = (row, col)
                         update_screen = True
-                        # Zera movimentacao
-                        ORIGEM = None
-                        DESTINO = None
-                        quadrado_selecionado = None
+                            
+                elif BOARD.destino is None:
+                    # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem
+                    #movimentos = BOARD.tabuleiro[ORIGEM[0]][ORIGEM[1]].movimento((ORIGEM[0], ORIGEM[1]), BOARD.tabuleiro)
+                    if (row, col) in BOARD.rotas_movimento():
+                        BOARD.destino = (row, col)
+                    else:
+                        BOARD.limpar_jogada()
+                        update_screen = True
+
+                if BOARD.origem is not None and BOARD.destino is not None:
+                    # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem
+                    BOARD.mover_elemento()
+                    BOARD.limpar_jogada()
+                    update_screen = True
+                        
 
         # Desenha os quadrados na tela e as peças nas posições iniciais
-        for linha in range(8):
-            for coluna in range(8):
-                desenhar_tabuleiro(janela, linha, coluna, TAMANHO_QUADRADO)
-                desenhar_pecas(tabuleiro, linha, coluna, janela, TAMANHO_QUADRADO)
-                desenhar_selecao(janela, tabuleiro, linha, coluna, quadrado_selecionado, TAMANHO_QUADRADO)
+        BOARD.desenhar_tabuleiro()
+        BOARD.desenhar_pecas()
+        
+                #desenhar_pecas(tabuleiro, linha, coluna, janela, TAMANHO_QUADRADO)
+                # desenhar_selecao(janela, tabuleiro, linha, coluna, quadrado_selecionado, TAMANHO_QUADRADO)
 
         if update_screen:
             pygame.display.update()
             update_screen = False
 
         # Limita a taxa de quadros do jogo
-        clock.tick(10)
+        clock.tick(60)
 
 
-def desenhar_selecao(janela, tabuleiro, linha, coluna, quadrado_selecionado, TAMANHO_QUADRADO):
-    COR = (255, 0, 0, 128)
-    # Verifica se o quadrado atual está selecionado e desenha um quadrado vermelho sobre ele
-    if tabuleiro[linha][coluna] is not None and (linha, coluna) == quadrado_selecionado:
-        movimentos = tabuleiro[linha][coluna].movimento((linha, coluna), tabuleiro)
-        for tupla in movimentos:
-            pygame.draw.rect(janela, COR, (
-            tupla[1] * TAMANHO_QUADRADO, tupla[0] * TAMANHO_QUADRADO, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
-        pygame.display.update()
+       
 
 
-def desenhar_tabuleiro(janela, linha, coluna, TAMANHO_QUADRADO):
-    BRANCO = (255, 244, 139)
-    PRETO = (117, 59, 39)
-    # Calcula a posição do quadrado na tela
-    x = coluna * TAMANHO_QUADRADO
-    y = linha * TAMANHO_QUADRADO
-    # Desenha o quadrado na tela
-    cor = BRANCO if (linha + coluna) % 2 == 0 else PRETO
-    pygame.draw.rect(janela, cor, (x, y, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
-
-
-def desenhar_pecas(tabuleiro, linha, coluna, janela, TAMANHO_QUADRADO):
-    x = coluna * TAMANHO_QUADRADO
-    y = linha * TAMANHO_QUADRADO
-    # Desenha a peça na posição inicial correspondente na matriz
-    if tabuleiro[linha] is not None and tabuleiro[linha][coluna] is not None:
-        peca_imagem = pygame.image.load(tabuleiro[linha][coluna].sprite.image_file)
-        # Obtém um objeto Rect que representa a imagem da peça e define sua posição central como o centro do quadrado
-        peca_rect = peca_imagem.get_rect()
-        peca_rect.center = (x + TAMANHO_QUADRADO // 2, y + TAMANHO_QUADRADO // 2)
-        # Desenha a imagem da peça na tela
-        janela.blit(peca_imagem, peca_rect)
-
-
-def mover_elemento(matriz, pos_antiga, pos_nova):
-    # Obter o valor do elemento na posição antiga
-    valor = matriz[pos_antiga[0]][pos_antiga[1]]
-
-    # Definir o valor do elemento na posição antiga como None
-    matriz[pos_antiga[0]][pos_antiga[1]] = None
-
-    # Definir o valor do elemento na nova posição como o valor da posição antiga
-    matriz[pos_nova[0]][pos_nova[1]] = valor
-
-    return matriz
-
+def trocar_turno():
+    # Jogador com as peças brancas sempre começa
+    global player
+    if player == 0:
+        player = 1
+    else:
+        player = 0
+    
 
 if __name__ == '__main__':
     main()
