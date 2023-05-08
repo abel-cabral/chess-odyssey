@@ -194,33 +194,36 @@ class Peca():
 
         return posicoes_possiveis
 
-    def movimento_rainha(self, posicao_rainha, tabuleiro):
+    def movimento_rainha(self, tabuleiro):
         posicoes_possiveis = []
 
         # Verifica as posições possíveis na horizontal (mesma linha)
         for coluna in range(8):
-            if coluna != posicao_rainha[1]:
-                if tabuleiro[posicao_rainha[0]][coluna] is None:
-                    posicoes_possiveis.append((posicao_rainha[0], coluna))
-                elif tabuleiro[posicao_rainha[0]][coluna].sprite.cor != self.sprite.cor:
-                    posicoes_possiveis.append((posicao_rainha[0], coluna))
+            if coluna != self.coluna:
+                if tabuleiro[self.linha][coluna] is None:
+                    posicoes_possiveis.append((self.linha, coluna))
+                elif tabuleiro[self.linha][coluna].sprite.cor != self.sprite.cor:
+                    posicoes_possiveis.append((self.linha, coluna))
                     break
                 else:
                     break
 
         # Verifica as posições possíveis na vertical (mesma coluna)
         for linha in range(8):
-            if linha != posicao_rainha[0]:
-                if tabuleiro[linha][posicao_rainha[1]] is None:
-                    posicoes_possiveis.append((linha, posicao_rainha[1]))
-                elif tabuleiro[linha][posicao_rainha[1]].sprite.cor != self.sprite.cor:
-                    posicoes_possiveis.append((linha, posicao_rainha[1]))
+            if linha != self.linha:
+                if tabuleiro[linha][self.coluna] is None:
+                    posicoes_possiveis.append((linha, self.coluna))
+                elif tabuleiro[linha][self.coluna].sprite.cor != self.sprite.cor:
+                    posicoes_possiveis.append((linha, self.coluna))
                     break
                 else:
                     break
 
         # Verifica as posições possíveis na diagonal
-        for i, j in zip(range(posicao_rainha[0]-1, -1, -1), range(posicao_rainha[1]-1, -1, -1)):
+        for i, j in zip(range(self.linha-1, -1, -1), range(self.coluna-1, -1, -1)):
+            if i < 0 or j < 0:
+                break
+            
             if tabuleiro[i][j] is None:
                 posicoes_possiveis.append((i, j))
             elif tabuleiro[i][j].sprite.cor != self.sprite.cor:
@@ -228,8 +231,11 @@ class Peca():
                 break
             else:
                 break
-
-        for i, j in zip(range(posicao_rainha[0]+1, 8), range(posicao_rainha[1]+1, 8)):
+            
+        for i, j in zip(range(self.linha+1, 8), range(self.coluna+1, 8)):
+            if i > 7 or j > 7:
+                break
+            
             if tabuleiro[i][j] is None:
                 posicoes_possiveis.append((i, j))
             elif tabuleiro[i][j].sprite.cor != self.sprite.cor:
@@ -237,8 +243,11 @@ class Peca():
                 break
             else:
                 break
-
-        for i, j in zip(range(posicao_rainha[0]+1, 8), range(posicao_rainha[1]-1, -1, -1)):
+            
+        for i, j in zip(range(self.linha+1, 8), range(self.coluna-1, -1, -1)):
+            if i > 7 or j < 0:
+                break
+            
             if tabuleiro[i][j] is None:
                 posicoes_possiveis.append((i, j))
             elif tabuleiro[i][j].sprite.cor != self.sprite.cor:
@@ -246,8 +255,11 @@ class Peca():
                 break
             else:
                 break
-
-        for i, j in zip(range(posicao_rainha[0]-1, -1, -1), range(posicao_rainha[1]+1, 8)):
+            
+        for i, j in zip(range(self.linha-1, -1, -1), range(self.coluna+1, 8)):
+            if i < 0 or j > 7:
+                break
+            
             if tabuleiro[i][j] is None:
                 posicoes_possiveis.append((i, j))
             elif tabuleiro[i][j].sprite.cor != self.sprite.cor:
@@ -255,7 +267,7 @@ class Peca():
                 break
             else:
                 break
-
+            
         return posicoes_possiveis
 
     def movimento_rei(self, posicao_rei, tabuleiro):

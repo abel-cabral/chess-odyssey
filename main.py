@@ -31,20 +31,21 @@ def main():
                 mouse_pos = pygame.mouse.get_pos()
 
                 # Calculate the row and column of the clicked square
-                col = int(mouse_pos[0] // BOARD.TAMANHO_QUADRADO)
                 row = int(mouse_pos[1] // BOARD.TAMANHO_QUADRADO)
+                col = int(mouse_pos[0] // BOARD.TAMANHO_QUADRADO)
 
                 if BOARD.origem is None:
                     # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem, so pode ser uma das suas peças
-                    if BOARD.tabuleiro[row][col] is not None and BOARD.tabuleiro[row][col].sprite.cor == 0:
+                    if BOARD.tabuleiro[row][col] is not None and BOARD.tabuleiro[row][col].color == BOARD.jogador_da_vez:
                         # A peça tem movimentação?
-                        BOARD.origem = (row, col)
+                        BOARD.set_origem(row, col)
                         update_screen = True
                             
                 elif BOARD.destino is None:
                     # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem
-                    #movimentos = BOARD.tabuleiro[ORIGEM[0]][ORIGEM[1]].movimento((ORIGEM[0], ORIGEM[1]), BOARD.tabuleiro)
-                    if (row, col) in BOARD.rotas_movimento():
+                    movimentos = BOARD.movimentos
+                    
+                    if (row, col) in movimentos:
                         BOARD.destino = (row, col)
                     else:
                         BOARD.limpar_jogada()
@@ -53,6 +54,8 @@ def main():
                 if BOARD.origem is not None and BOARD.destino is not None:
                     # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem
                     BOARD.mover_elemento()
+                    BOARD.inverter_jogador()
+                    
                     BOARD.limpar_jogada()
                     update_screen = True
                         
