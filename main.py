@@ -2,7 +2,6 @@
 import sys
 from PPlay.game import Game
 from PPlay.sound import Sound
-from PPlay.sprite import *
 from PPlay.board import Board
 
 

@@ -1,5 +1,3 @@
-from PPlay.sprite import Sprite
-
 class Piece():
     Branca = "W"
     Preta = "B"
