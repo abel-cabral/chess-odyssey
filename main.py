@@ -1,27 +1,17 @@
 
 import sys
+from PPlay.game import Game
 from PPlay.sound import Sound
-import pygame as pygame
 from PPlay.sprite import *
 from PPlay.board import Board
 
 
 def main():
-    pygame.init()
-    pygame.display.set_caption('Xadrez (1.0.0)')
-    icon = pygame.image.load("assets/music/blackQueen.png")
-    pygame.display.set_icon(icon)
-
-    # Carrega a imagem da peça
-    update_screen = True
-    
-    # Musica de fundo
-    sound = Sound('assets/theme.mp3')
-    sound.loop = True
-    sound.play()
-    
+    game = Game('Xadrez (1.0.0)', 'assets/blackQueen.png')
+    pygame = game.pygame
     # Cria o tabuleiro do jogo
-    BOARD = Board(pygame)
+    BOARD = game.start()
+    update_screen = False
 
     # Cria um objeto Clock para limitar a taxa de quadros do jogo
     clock = pygame.time.Clock()
@@ -73,18 +63,15 @@ def main():
                     BOARD.limpar_jogada()
                     update_screen = True
                         
-
-        # Desenha os quadrados na tela e as peças nas posições iniciais
-        BOARD.desenhar_tabuleiro()
-        BOARD.desenhar_pecas()
-        
-                #desenhar_pecas(tabuleiro, linha, coluna, janela, TAMANHO_QUADRADO)
-                # desenhar_selecao(janela, tabuleiro, linha, coluna, quadrado_selecionado, TAMANHO_QUADRADO)
-
+        game.desenha_tela(BOARD)
         if update_screen:
             pygame.display.update()
             update_screen = False
-        print(f'Tempo de jogo: {tempo_de_jogo} segundos')
+            check = BOARD.is_check()
+            check_matte = BOARD.is_checkmate()
+            if check and check_matte:
+                game.end_game()
+        #print(f'Tempo de jogo: {tempo_de_jogo} segundos')
 
 if __name__ == '__main__':
     main()

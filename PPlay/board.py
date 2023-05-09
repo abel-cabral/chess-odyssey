@@ -1,13 +1,14 @@
+import copy
 from PPlay.piece import Bishop, King, Knight, Pawn, Piece, Queen, Rook
 
 class Board:
-    window_size = 600
+    window_size = 800
     # Define o tamanho de cada quadrado do tabuleiro
     TAMANHO_QUADRADO = window_size / 8
     
     def __init__(self, pygame):
         self.pygame = pygame
-        self.janela = pygame.display.set_mode((600, 600))
+        self.janela = pygame.display.set_mode((800, 800))
         self.tabuleiro = [[None for j in range(8)] for i in range(8)]
         self.jogador_da_vez = "W"
         self.origem = None
@@ -139,6 +140,56 @@ class Board:
         # Atualiza na peça sua localizacao
         self.tabuleiro[self.destino[0]][self.destino[1]].update_position(self.destino[0], self.destino[1])
 
+    def is_checkmate(self):
+        player = self.jogador_da_vez
+        # Verifica se o rei está em xeque
+        if self.is_check():
+            # Verifica se há alguma jogada possível para o jogador
+            for row in range(8):
+                for col in range(8):
+                    if self.tabuleiro[row][col] is not None and self.tabuleiro[row][col].color == player:
+                        piece = self.tabuleiro[row][col]
+                        if isinstance(piece, King):
+                            possible_moves = piece.get_possible_moves(self)
+                        else:
+                            possible_moves = piece.get_possible_moves(self.tabuleiro)
+                        for move in possible_moves:
+                            # Simula a jogada
+                            temp_board = copy.deepcopy(self.tabuleiro)
+                            temp_board[move[0]][move[1]] = temp_board[row][col]
+                            temp_board[row][col] = None
+                            # Verifica se o rei ainda está em xeque
+                            if not self.is_check():
+                                return False
+            # Se não há jogadas possíveis, é checkmate
+            return True
+        else:
+            return False
+
+
+    def is_check(self):
+        player = self.jogador_da_vez
+        king_position = self.achar_posicao_rei()
+        # Verifica se alguma peça do outro jogador pode atacar o rei
+        for row in range(8):
+            for col in range(8):
+                piece = self.tabuleiro[row][col]
+                if piece is not None and piece.color != player:
+                    if isinstance(piece, King):
+                        possible_moves = piece.get_possible_moves(self)
+                    else:
+                        possible_moves = piece.get_possible_moves(self.tabuleiro)
+                    if king_position in possible_moves:
+                        return True
+        return False
+
+    def achar_posicao_rei(self):
+        player = self.jogador_da_vez
+        for pecas in self.tabuleiro:
+            for peca in pecas:
+                if isinstance(peca, King) and peca.color == player:
+                    return (peca.linha, peca.coluna)
+        return None
 
     def inverter_jogador(self):
         self.jogador_da_vez = "B" if self.jogador_da_vez == "W" else "W"
