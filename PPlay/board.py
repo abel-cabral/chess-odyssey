@@ -43,10 +43,10 @@ class Board:
         pieces = [
             [Pawn(1, i, Piece.Preta) for i in range(8)],
             [Pawn(6, i, Piece.Branca) for i in range(8)],
-            Rook(0, 0, Piece.Preta),
-            Rook(0, 7, Piece.Preta),
-            Rook(7, 0, Piece.Branca),
-            Rook(7, 7, Piece.Branca),
+            Rook(0, 0, Piece.Preta, "ESQ"),
+            Rook(0, 7, Piece.Preta, "DIR"),
+            Rook(7, 0, Piece.Branca, "ESQ"),
+            Rook(7, 7, Piece.Branca, "DIR"),
             Knight(0, 1, Piece.Preta),
             Knight(0, 6, Piece.Preta),
             Knight(7, 1, Piece.Branca),
@@ -97,17 +97,48 @@ class Board:
         return movimentos
     
     def mover_elemento(self):
+        torres = [(0,0), (0,7), (7,0), (7,7)]
+        
         # Obter o valor do elemento na posição antiga
         valor = self.tabuleiro[self.origem[0]][self.origem[1]]
-
+    
         # Definir o valor do elemento na posição antiga como None
         self.tabuleiro[self.origem[0]][self.origem[1]] = None
-
+        
+        # Tratamento para o caso de Rook (Roque)
+        if isinstance(valor, King):
+            try:
+                offsets = [1, -2]  # Possíveis deslocamentos para encontrar a torre
+                torre = None
+                for offset in offsets:
+                    try:
+                        torre_index = torres.index((self.destino[0], self.destino[1] + offset))
+                        linha, coluna = torres[torre_index]
+                        torre = self.tabuleiro[linha][coluna]
+                        if isinstance(torre, Rook):
+                            break  # Encontramos a torre, então podemos sair do loop
+                    except ValueError:
+                        continue  # Se não encontrarmos a torre, tentamos o próximo deslocamento
+                    
+                if torre and torre.LADO == "DIR":  # Para a torre à direita
+                    new_torre_coluna = self.destino[1] - 1
+                else:  # Para a torre à esquerda
+                    new_torre_coluna = self.destino[1] + 1
+    
+                # Move a Torre
+                self.tabuleiro[linha][coluna] = None
+                self.tabuleiro[self.destino[0]][new_torre_coluna] = torre
+                torre.update_position(self.destino[0], new_torre_coluna)
+    
+            except:
+                pass  # Ignoramos qualquer exceção no processo de roque e prosseguimos com o movimento normal
+            
         # Definir o valor do elemento na nova posição como o valor da posição antiga
         self.tabuleiro[self.destino[0]][self.destino[1]] = valor
-        
+    
         # Atualiza na peça sua localizacao
         self.tabuleiro[self.destino[0]][self.destino[1]].update_position(self.destino[0], self.destino[1])
+
 
     def inverter_jogador(self):
         self.jogador_da_vez = "B" if self.jogador_da_vez == "W" else "W"

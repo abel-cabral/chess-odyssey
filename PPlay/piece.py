@@ -39,8 +39,10 @@ class Piece():
 class Rook(Piece):
     PIECE_TYPE = "R"
     VALUE = 500
-
-    def __init__(self, linha, coluna, color):
+    LADO = None
+    
+    def __init__(self, linha, coluna, color, lado):
+        self.LADO = lado
         self.PATH = "assets/whiteRook.png" if color == 'W' else "assets/blackRook.png"
         super(Rook, self).__init__(linha, coluna, color, Rook.PIECE_TYPE, Rook.VALUE)
     
@@ -256,8 +258,44 @@ class King(Piece):
                 if target_piece is None or target_piece.color != self.color:
                     posicoes_possiveis.append((nova_linha, nova_coluna))
 
+        # Adicionar roque se o rei ainda não se moveu
+        if self.first_move:
+            for col in (0, 7):  # Colunas das torres (roque longo e curto)
+                rook = board.tabuleiro[self.linha][col]
+                if rook is not None and rook.piece_type == "R" and rook.first_move:
+                    if self.is_roque_possible(board, rook.coluna):
+                        posicoes_possiveis.append((self.linha, self.coluna + 2 if col == 7 else self.coluna - 2))
+
         return posicoes_possiveis
 
+    def is_roque_possible(self, board, rook_col):
+        start_col = min(self.coluna, rook_col) + 1
+        end_col = max(self.coluna, rook_col) - 1
+
+        # Verificar se as casas entre o rei e a torre estão vazias
+        for col in range(start_col, end_col + 1):
+            if board.tabuleiro[self.linha][col] is not None:
+                return False
+
+        # Verificar se o rei está em xeque ou se passa por casas em xeque durante o roque
+        direction = 1 if rook_col > self.coluna else -1
+        for col_offset in range(direction, 3 * direction, direction):
+            target_col = self.coluna + col_offset
+            if 0 <= target_col < 8:
+                # Faz a jogada temporária e verifica se o rei fica em xeque
+                temp = board.tabuleiro[self.linha][self.coluna]
+                board.tabuleiro[self.linha][self.coluna] = None
+                board.tabuleiro[self.linha][target_col] = temp
+                is_check = False # board.is_check(self.color)
+                
+                # Desfaz a jogada temporária
+                board.tabuleiro[self.linha][self.coluna] = temp
+                board.tabuleiro[self.linha][target_col] = None
+
+                if is_check:
+                    return False
+
+        return True
 # OK
 class Pawn(Piece):
     PIECE_TYPE = "P"
