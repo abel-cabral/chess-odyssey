@@ -35,7 +35,7 @@ class Piece():
         self.coluna = coluna
         self.first_move = False
 
-#OK
+# OK
 class Rook(Piece):
     PIECE_TYPE = "R"
     VALUE = 500
@@ -89,7 +89,6 @@ class Rook(Piece):
 
         return posicoes_possiveis
 
-
 # OK
 class Knight(Piece):
     PIECE_TYPE = "N"
@@ -117,7 +116,7 @@ class Knight(Piece):
                 posicoes_possiveis.append((nova_linha, nova_coluna))
         return posicoes_possiveis
 
-#OK
+# OK
 class Bishop(Piece):
     PIECE_TYPE = "B"
     VALUE = 330
@@ -187,6 +186,7 @@ class Bishop(Piece):
 
         return posicoes_possiveis
 
+# OK
 class Queen(Piece):
     PIECE_TYPE = "Q"
     VALUE = 900
@@ -234,6 +234,7 @@ class Queen(Piece):
                     
         return possible_moves
 
+# TODO Logica de Check
 class King(Piece):
     PIECE_TYPE = "K"
     VALUE = 20000
@@ -296,6 +297,7 @@ class King(Piece):
                     return False
 
         return True
+
 # OK
 class Pawn(Piece):
     PIECE_TYPE = "P"
