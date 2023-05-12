@@ -1,76 +1,96 @@
-
 import sys
 from PPlay.game import Game
+from PPlay.ia import IA
 from PPlay.sound import Sound
-from PPlay.board import Board
+import concurrent.futures
 
+
+
+def handle_ai_move(ia, board):
+    return ia.mover(board)
 
 def main():
     game = Game('Xadrez (1.0.0)', 'assets/blackQueen.png')
     pygame = game.pygame
+    ia = IA(cor='B', profundidade_max=3)
+    
     # Cria o tabuleiro do jogo
     BOARD = game.start()
     update_screen = False
 
     # Cria um objeto Clock para limitar a taxa de quadros do jogo
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     clock = pygame.time.Clock()
     tempo_de_jogo = 0
-
+    
     while True:
-        # Calcula o tempo decorrido desde a última chamada (em milissegundos)
         dt = clock.tick(60)  # Limita o loop a no máximo 60 frames por segundo
-
-        # Converte para segundos e adiciona ao tempo de jogo total
         tempo_de_jogo += dt / 1000.0
-        
-        # Handle events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                # Get the position of the mouse
-                mouse_pos = pygame.mouse.get_pos()
-
-                # Calculate the row and column of the clicked square
-                row = int(mouse_pos[1] // BOARD.TAMANHO_QUADRADO)
-                col = int(mouse_pos[0] // BOARD.TAMANHO_QUADRADO)
-
-                if BOARD.origem is None:
-                    # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem, so pode ser uma das suas peças
-                    if BOARD.tabuleiro[row][col] is not None and BOARD.tabuleiro[row][col].color == BOARD.jogador_da_vez:
-                        # A peça tem movimentação?
-                        BOARD.set_origem(row, col)
-                        update_screen = True
-                            
-                elif BOARD.destino is None:
-                    # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem
-                    movimentos = BOARD.movimentos
-                    
-                    if (row, col) in movimentos:
-                        BOARD.destino = (row, col)
-                    else:
-                        BOARD.limpar_jogada()
-                        update_screen = True
-
-                if BOARD.origem is not None and BOARD.destino is not None:
-                    # Se nenhum quadrado tiver sido selecionado anteriormente, atualiza a posição da origem
-                    BOARD.mover_elemento()
-                    Sound("assets/music/move.mp3").play()
-                    BOARD.inverter_jogador()
-                    
-                    BOARD.limpar_jogada()
-                    update_screen = True
-                        
+                      
         game.desenha_tela(BOARD)
+        
         if update_screen:
             pygame.display.update()
             update_screen = False
-            check = BOARD.is_check()
             check_matte = BOARD.is_checkmate()
-            if check and check_matte:
-                game.end_game()
-        #print(f'Tempo de jogo: {tempo_de_jogo} segundos')
+            if check_matte:
+                pass
+                #game.end_game()
+        
+        if BOARD.jogador_da_vez == 'W':
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    row = int(mouse_pos[1] // BOARD.TAMANHO_QUADRADO)
+                    col = int(mouse_pos[0] // BOARD.TAMANHO_QUADRADO)
+
+                    if BOARD.origem is None:
+                        if BOARD.tabuleiro[row][col] is not None and BOARD.tabuleiro[row][col].color == BOARD.jogador_da_vez:
+                            BOARD.set_origem(row, col)
+                            update_screen = True
+
+                    elif BOARD.destino is None:
+                        movimentos = BOARD.movimentos
+
+                        if (row, col) in movimentos:
+                            BOARD.destino = (row, col)
+                        else:
+                            BOARD.limpar_jogada()
+                            update_screen = True
+
+                    if BOARD.origem is not None and BOARD.destino is not None:
+                        update_screen = True
+                        BOARD.mover_elemento()
+                        Sound("assets/music/move.mp3").play()
+                        BOARD.inverter_jogador()
+                        BOARD.limpar_jogada()
+        else:
+            # Inicia o thread da IA.
+            if not ia.ia_playing:
+                ia, BOARD
+                future = executor.submit(handle_ai_move, ia, BOARD)
+                ia.ia_playing = True
+            
+            # Verifique se a tarefa da IA terminou
+            if future.done():
+                try:
+                    # Movimentacao da IA
+                    source, destination = future.result()
+                    BOARD.origem = source
+                    BOARD.destino = destination
+                    BOARD.mover_elemento()
+                    Sound("assets/music/move.mp3").play()
+                    BOARD.inverter_jogador()
+                    BOARD.limpar_jogada()
+                    ia.ia_playing = False
+                    # Inicie uma nova tarefa, se necessário
+                    future = executor.submit(handle_ai_move, ia, BOARD)
+                    update_screen = True
+                except Exception as e:
+                    print("A thread levantou uma exceção:", e)
 
 if __name__ == '__main__':
     main()

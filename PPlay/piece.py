@@ -1,3 +1,6 @@
+from paths import get_asset_path
+
+
 class Piece():
     Branca = "W"
     Preta = "B"
@@ -27,6 +30,12 @@ class Piece():
             case "P":
                 return tabuleiro[self.linha][self.coluna].get_possible_moves(tabuleiro)
     
+    def promocao_peao(self):
+        if self.color == self.Branca and self.linha == 0:
+            return True
+        elif self.color == self.Preta and self.linha == 7:
+            return True
+        return False
 
     def update_position(self, linha, coluna):
         self.linha = linha
@@ -190,7 +199,7 @@ class Queen(Piece):
     VALUE = 900
 
     def __init__(self, linha, coluna, color):
-        self.PATH = "assets/whiteQueen.png" if color == 'W' else "assets/blackQueen.png"
+        self.PATH = get_asset_path('whiteQueen.png' if color == 'W' else 'blackQueen.png')
         super(Queen, self).__init__(linha, coluna, color, Queen.PIECE_TYPE, Queen.VALUE)
         
     def get_possible_moves(self, tabuleiro):

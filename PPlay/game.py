@@ -9,8 +9,8 @@ class Game:
         pygame.init()
         pygame.display.set_caption(app_name)
         pygame.display.set_icon(pygame.image.load(icon_path))
+        self.janela = pygame.display.set_mode((800, 800))
         self.pygame = pygame
-        self.janela = None
     
     def start(self):
         # Musica de fundo
@@ -20,8 +20,8 @@ class Game:
         self.SOUND = sound
         
         # Tela e peças
-        BOARD = Board(self.pygame)
-        self.janela = BOARD.janela
+        BOARD = Board()
+        
         self.desenha_tela(BOARD)
         
         self.pygame.display.update()
@@ -50,5 +50,5 @@ class Game:
         self.pygame.display.flip()
         
     def desenha_tela(self, BOARD):
-        BOARD.desenhar_tabuleiro()
-        BOARD.desenhar_pecas()
+        BOARD.desenhar_tabuleiro(self.pygame, self.janela)
+        BOARD.desenhar_pecas(self.pygame, self.janela)

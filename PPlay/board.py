@@ -6,9 +6,7 @@ class Board:
     # Define o tamanho de cada quadrado do tabuleiro
     TAMANHO_QUADRADO = window_size / 8
     
-    def __init__(self, pygame):
-        self.pygame = pygame
-        self.janela = pygame.display.set_mode((800, 800))
+    def __init__(self):
         self.tabuleiro = [[None for j in range(8)] for i in range(8)]
         self.jogador_da_vez = "W"
         self.origem = None
@@ -22,7 +20,7 @@ class Board:
 
     
     # PREPARAR XADREZ PARA INICIO DO JOGO, GRAFICO + POSICOES DAS PEÇAS    
-    def desenhar_tabuleiro(self):
+    def desenhar_tabuleiro(self, pygame, janela):
         COR1 = (255, 244, 139) # Player 1
         COR2 = (117, 59, 39) # Player 2
         COR3 = (255, 0, 0) # Selecionado
@@ -38,7 +36,7 @@ class Board:
                 else:
                     cor = COR1 if (linha + coluna) % 2 == 0 else COR2
                 # Desenha o quadrado na tela
-                self.pygame.draw.rect(self.janela, cor, (x, y, self.TAMANHO_QUADRADO, self.TAMANHO_QUADRADO))
+                pygame.draw.rect(janela, cor, (x, y, self.TAMANHO_QUADRADO, self.TAMANHO_QUADRADO))
                 
     def posicionar_peças(self):
         pieces = [
@@ -71,19 +69,19 @@ class Board:
                 self.tabuleiro[piece.linha][piece.coluna] = piece
         self.tabuleiro
 
-    def desenhar_pecas(self):
+    def desenhar_pecas(self, pygame, janela):
         for linha in range(8):
             for coluna in range(8):
                 x = coluna * self.TAMANHO_QUADRADO
                 y = linha * self.TAMANHO_QUADRADO
                 # Desenha a peça na posição inicial correspondente na matriz
                 if self.tabuleiro[linha] is not None and self.tabuleiro[linha][coluna] is not None:
-                    peca_imagem = self.pygame.image.load(self.tabuleiro[linha][coluna].PATH)
+                    peca_imagem = pygame.image.load(self.tabuleiro[linha][coluna].PATH)
                     # Obtém um objeto Rect que representa a imagem da peça e define sua posição central como o centro do quadrado
                     peca_rect = peca_imagem.get_rect()
                     peca_rect.center = (x + self.TAMANHO_QUADRADO // 2, y + self.TAMANHO_QUADRADO // 2)
                     # Desenha a imagem da peça na tela
-                    self.janela.blit(peca_imagem, peca_rect)
+                    janela.blit(peca_imagem, peca_rect)
     # FIM DA INICIALIZAÇÃO
     
     
@@ -97,17 +95,17 @@ class Board:
             movimentos = self.tabuleiro[linha][coluna].movimento(self)
         return movimentos
     
-    def mover_elemento(self):
+    def mover_elemento(self, atualizar_pecas=True):
         torres = [(0,0), (0,7), (7,0), (7,7)]
         
         # Obter o valor do elemento na posição antiga
-        valor = self.tabuleiro[self.origem[0]][self.origem[1]]
+        peca = self.tabuleiro[self.origem[0]][self.origem[1]]
     
         # Definir o valor do elemento na posição antiga como None
         self.tabuleiro[self.origem[0]][self.origem[1]] = None
         
         # Tratamento para o caso de Rook (Roque)
-        if isinstance(valor, King):
+        if isinstance(peca, King):
             try:
                 offsets = [1, -2]  # Possíveis deslocamentos para encontrar a torre
                 torre = None
@@ -130,15 +128,19 @@ class Board:
                 self.tabuleiro[linha][coluna] = None
                 self.tabuleiro[self.destino[0]][new_torre_coluna] = torre
                 torre.update_position(self.destino[0], new_torre_coluna)
-    
             except:
                 pass  # Ignoramos qualquer exceção no processo de roque e prosseguimos com o movimento normal
-            
+        
         # Definir o valor do elemento na nova posição como o valor da posição antiga
-        self.tabuleiro[self.destino[0]][self.destino[1]] = valor
-    
-        # Atualiza na peça sua localizacao
-        self.tabuleiro[self.destino[0]][self.destino[1]].update_position(self.destino[0], self.destino[1])
+        self.tabuleiro[self.destino[0]][self.destino[1]] = peca
+        
+        if atualizar_pecas:
+            # Atualiza na peça sua localizacao
+            self.tabuleiro[self.destino[0]][self.destino[1]].update_position(self.destino[0], self.destino[1])
+            
+        if isinstance(peca, Pawn):
+            if peca.promocao_peao():
+                self.tabuleiro[self.destino[0]][self.destino[1]] = Queen(self.destino[0], self.destino[1], peca.color)
 
     def is_checkmate(self):
         player = self.jogador_da_vez
@@ -198,3 +200,13 @@ class Board:
         self.origem = None
         self.destino = None
         self.movimentos = None
+        
+    def __deepcopy__(self, memo):
+        # Cria uma nova instância da classe Board
+        new_board = Board()
+        new_board.jogador_da_vez = self.jogador_da_vez
+        new_board.origem = copy.deepcopy(self.origem, memo)
+        new_board.destino = copy.deepcopy(self.destino, memo)
+        new_board.movimentos = copy.deepcopy(self.movimentos, memo)
+        new_board.tabuleiro = [[copy.deepcopy(peca, memo) for peca in linha] for linha in self.tabuleiro]
+        return new_board
