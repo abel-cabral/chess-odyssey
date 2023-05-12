@@ -50,7 +50,7 @@ class Rook(Piece):
     
     def __init__(self, linha, coluna, color, lado):
         self.LADO = lado
-        self.PATH = "assets/whiteRook.png" if color == 'W' else "assets/blackRook.png"
+        self.PATH = get_asset_path('whiteRook.png' if color == 'W' else 'blackRook.png')
         super(Rook, self).__init__(linha, coluna, color, Rook.PIECE_TYPE, Rook.VALUE)
     
     def get_possible_moves(self, tabuleiro):
@@ -102,7 +102,7 @@ class Knight(Piece):
     VALUE = 320
     
     def __init__(self, linha, coluna, color):
-        self.PATH = "assets/whiteKnight.png" if color == 'W' else "assets/blackKnight.png"
+        self.PATH = get_asset_path('whiteKnight.png' if color == 'W' else 'blackKnight.png')
         super(Knight, self).__init__(linha, coluna, color, Knight.PIECE_TYPE, Knight.VALUE)
         
     def get_possible_moves(self, tabuleiro):
@@ -129,7 +129,7 @@ class Bishop(Piece):
     VALUE = 330
 
     def __init__(self, linha, coluna, color):
-        self.PATH = "assets/whiteBishop.png" if color == 'W' else "assets/blackBishop.png"
+        self.PATH = get_asset_path('whiteBishop.png' if color == 'W' else 'blackBishop.png')
         super(Bishop, self).__init__(linha, coluna, color, Bishop.PIECE_TYPE, Bishop.VALUE)
 
     def get_possible_moves(self, tabuleiro):
@@ -247,7 +247,7 @@ class King(Piece):
     VALUE = 20000
 
     def __init__(self, linha, coluna, color):
-        self.PATH = "assets/whiteKing.png" if color == 'W' else "assets/blackKing.png"
+        self.PATH = get_asset_path('whiteKing.png' if color == 'W' else 'blackKing.png')
         super(King, self).__init__(linha, coluna, color, King.PIECE_TYPE, King.VALUE)
         
     def get_possible_moves(self, board):
@@ -311,7 +311,7 @@ class Pawn(Piece):
     VALUE = 100
 
     def __init__(self, linha, coluna, color):
-        self.PATH = "assets/whitePawn.png" if color == 'W' else "assets/blackPawn.png"
+        self.PATH = get_asset_path('whitePawn.png' if color == 'W' else 'blackPawn.png')
         super(Pawn, self).__init__(linha, coluna, color, Pawn.PIECE_TYPE, Pawn.VALUE)
         
     def get_possible_moves(self, tabuleiro):

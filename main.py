@@ -4,6 +4,8 @@ from PPlay.ia import IA
 from PPlay.sound import Sound
 import concurrent.futures
 
+from paths import get_asset_path
+
 
 
 def handle_ai_move(ia, board):
@@ -23,12 +25,21 @@ def main():
     clock = pygame.time.Clock()
     tempo_de_jogo = 0
     
+    # Configuração
+    SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
+    BUTTON_WIDTH, BUTTON_HEIGHT = 100, 50
+    BUTTON_PADDING = 20
+    
+
+
+    # A flag de promoção inicia como False
+    promotion = False
+    game.desenha_tela(BOARD)
+    
     while True:
         dt = clock.tick(60)  # Limita o loop a no máximo 60 frames por segundo
         tempo_de_jogo += dt / 1000.0
                       
-        game.desenha_tela(BOARD)
-        
         if update_screen:
             pygame.display.update()
             update_screen = False
@@ -91,6 +102,12 @@ def main():
                     update_screen = True
                 except Exception as e:
                     print("A thread levantou uma exceção:", e)
+                    
+        # Se a promoção está ativa, desenhe os botões de promoção
+        if False:
+            mouse_pos = pygame.mouse.get_pos()
+            game.desenhar_botoes(BOARD.jogador_da_vez)
+            update_screen = True
 
 if __name__ == '__main__':
     main()
