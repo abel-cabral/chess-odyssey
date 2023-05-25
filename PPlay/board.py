@@ -40,8 +40,8 @@ class Board:
                 
     def posicionar_peças(self):
         pieces = [
-            # [Pawn(1, i, Piece.Preta) for i in range(8)],
-            # [Pawn(6, i, Piece.Branca) for i in range(8)],
+            [Pawn(1, i, Piece.Preta) for i in range(8)],
+            [Pawn(6, i, Piece.Branca) for i in range(8)],
             Rook(0, 0, Piece.Preta, "ESQ"),
             Rook(0, 7, Piece.Preta, "DIR"),
             Rook(7, 0, Piece.Branca, "ESQ"),
@@ -55,9 +55,9 @@ class Board:
             Bishop(7, 2, Piece.Branca),
             Bishop(7, 5, Piece.Branca),
             King(7, 4, Piece.Branca),
-            King(0, 4, Piece.Preta),
+            King(0, 3, Piece.Preta),
             Queen(7, 3, Piece.Branca),
-            Queen(0, 3, Piece.Preta)
+            Queen(0, 4, Piece.Preta)
         ]
 
         for piece in pieces:
@@ -90,11 +90,22 @@ class Board:
     def rotas_movimento(self):
         movimentos = []
         if self.origem is not None:
-            linha = self.origem[0]
-            coluna = self.origem[1]
+            linha, coluna = self.origem
             movimentos = self.tabuleiro[linha][coluna].movimento(self)
-        return movimentos
-    
+
+        # REMOVE JOGADAS QUE DEIXARIAM O REI EM CHECK
+        movimentos_validos = []
+        for movimento in movimentos:
+            self.destino = movimento
+            check = self.prever_check()
+
+            if not check:
+                movimentos_validos.append(movimento)
+
+            self.destino = None  # Reseta o destino para None, permitindo que o jogador selecione um movimento válido.
+
+        return movimentos_validos
+
     def mover_elemento(self, atualizar_pecas=True):
         torres = [(0,0), (0,7), (7,0), (7,7)]
         
@@ -190,7 +201,6 @@ class Board:
             return True
         else:
             return False
-
 
     def is_check(self):
         player = self.jogador_da_vez
