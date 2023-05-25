@@ -74,5 +74,12 @@ class IA:
                     else:
                         movimentos = peca.get_possible_moves(board.tabuleiro)
                     for movimento in movimentos:
-                        jogadas.append(((linha, coluna), movimento))
+                        # Nas jogadas possiveis, elimina as que deixariam o rei em check.
+                        board.origem = (linha, coluna)
+                        board.destino = (movimento[0], movimento[1])
+                        check = board.prever_check()
+                        board.limpar_jogada()
+                        
+                        if not check:
+                            jogadas.append(((linha, coluna), movimento))
         return jogadas

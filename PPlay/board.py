@@ -40,8 +40,8 @@ class Board:
                 
     def posicionar_peças(self):
         pieces = [
-            [Pawn(1, i, Piece.Preta) for i in range(8)],
-            [Pawn(6, i, Piece.Branca) for i in range(8)],
+            # [Pawn(1, i, Piece.Preta) for i in range(8)],
+            # [Pawn(6, i, Piece.Branca) for i in range(8)],
             Rook(0, 0, Piece.Preta, "ESQ"),
             Rook(0, 7, Piece.Preta, "DIR"),
             Rook(7, 0, Piece.Branca, "ESQ"),
@@ -141,6 +141,29 @@ class Board:
         if isinstance(peca, Pawn):
             if peca.promocao_peao():
                 self.tabuleiro[self.destino[0]][self.destino[1]] = Queen(self.destino[0], self.destino[1], peca.color)
+                
+    # Preve se o proximo movimento pode gerar Check
+    def prever_check(self, atualizar_pecas=True):
+        # Obter o valor do elemento na posição antiga
+        peca_original = self.tabuleiro[self.origem[0]][self.origem[1]] # Peça Atual
+        peca_misteriosa = self.tabuleiro[self.destino[0]][self.destino[1]] # Pode estar com None ou uma Peça Inimiga
+    
+        # Primeiro move faz a movimentação
+        self.tabuleiro[self.origem[0]][self.origem[1]] = None
+        self.tabuleiro[self.destino[0]][self.destino[1]] = peca_original
+        if atualizar_pecas: # Atualiza na peça sua localizacao
+            self.tabuleiro[self.destino[0]][self.destino[1]].update_position(self.destino[0], self.destino[1])
+            
+        # Segundo verifica se com essa movimentacao houve um check
+        check = self.is_check()
+        
+        # Terceiro desfaz a movimentacao
+        self.tabuleiro[self.origem[0]][self.origem[1]] = peca_original
+        self.tabuleiro[self.destino[0]][self.destino[1]] = peca_misteriosa
+        if atualizar_pecas: # Atualiza na peça sua localizacao
+            self.tabuleiro[self.origem[0]][self.origem[1]].update_position(self.origem[0], self.origem[1])
+            
+        return check
 
     def is_checkmate(self):
         player = self.jogador_da_vez

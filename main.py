@@ -34,12 +34,13 @@ def main():
 
     # A flag de promoção inicia como False
     promotion = False
-    game.desenha_tela(BOARD)
     
     while True:
         dt = clock.tick(60)  # Limita o loop a no máximo 60 frames por segundo
         tempo_de_jogo += dt / 1000.0
                       
+        game.desenha_tela(BOARD)
+        
         if update_screen:
             pygame.display.update()
             update_screen = False
