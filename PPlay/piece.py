@@ -1,6 +1,5 @@
 from paths import get_asset_path
 
-
 class Piece():
     Branca = "W"
     Preta = "B"

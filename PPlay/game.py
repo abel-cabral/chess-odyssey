@@ -38,10 +38,10 @@ class Game:
         screen = self.pygame.display.get_surface()  # Obtém a superfície atual
 
         # Configura a fonte
-        font = self.pygame.font.Font(None, 48)  # Escolha o tamanho da fonte que achar melhor
+        font = self.pygame.font.Font(None, 42)  # Escolha o tamanho da fonte que achar melhor
 
         # Configura a mensagem
-        text = font.render('Fim de Jogo! {} venceu!\n'.format("Jogador Preto"), True, (255, 0, 0))  # Texto, antialiasing e cor (RGB)
+        text = font.render('Fim de Jogo! {} venceu!\n'.format("Jogador Branco"), True, (255, 0, 0))  # Texto, antialiasing e cor (RGB)
 
         # Configura onde o texto será desenhado
         textRect = text.get_rect()

@@ -1,4 +1,3 @@
-import copy
 from PPlay.piece import Bishop, King, Knight, Pawn, Piece, Queen, Rook
 
 class Board:
@@ -55,9 +54,9 @@ class Board:
             Bishop(7, 2, Piece.Branca),
             Bishop(7, 5, Piece.Branca),
             King(7, 4, Piece.Branca),
-            King(0, 3, Piece.Preta),
+            King(0, 4, Piece.Preta),
             Queen(7, 3, Piece.Branca),
-            Queen(0, 4, Piece.Preta)
+            Queen(0, 3, Piece.Preta)
         ]
 
         for piece in pieces:
@@ -176,32 +175,6 @@ class Board:
             
         return check
 
-    def is_checkmate(self):
-        player = self.jogador_da_vez
-        # Verifica se o rei está em xeque
-        if self.is_check():
-            # Verifica se há alguma jogada possível para o jogador
-            for row in range(8):
-                for col in range(8):
-                    if self.tabuleiro[row][col] is not None and self.tabuleiro[row][col].color == player:
-                        piece = self.tabuleiro[row][col]
-                        if isinstance(piece, King):
-                            possible_moves = piece.get_possible_moves(self)
-                        else:
-                            possible_moves = piece.get_possible_moves(self.tabuleiro)
-                        for move in possible_moves:
-                            # Simula a jogada
-                            temp_board = copy.deepcopy(self.tabuleiro)
-                            temp_board[move[0]][move[1]] = temp_board[row][col]
-                            temp_board[row][col] = None
-                            # Verifica se o rei ainda está em xeque
-                            if not self.is_check():
-                                return False
-            # Se não há jogadas possíveis, é checkmate
-            return True
-        else:
-            return False
-
     def is_check(self):
         player = self.jogador_da_vez
         king_position = self.achar_posicao_rei()
@@ -216,6 +189,41 @@ class Board:
                         possible_moves = piece.get_possible_moves(self.tabuleiro)
                     if king_position in possible_moves:
                         return True
+        return False
+    
+    def is_checkmate(self):
+        if not self.is_check():
+            return False  # Se o rei não está em xeque, então não é checkmate
+
+        # Salvar os valores salvos
+        origem = self.origem
+        destino = self.destino
+        movimentos = self.movimentos
+        
+        # Acha o rei
+        posicao_rei = self.achar_posicao_rei()
+        rei = self.tabuleiro[posicao_rei[0]][posicao_rei[1]]
+        origem = self.origem
+        jogadas = []
+        
+        # Remover jogadas que gerariam check
+        for movimento in rei.get_possible_moves(self):
+            self.origem = (posicao_rei[0], posicao_rei[1])
+            self.destino = (movimento[0], movimento[1])
+            check = self.prever_check()
+            self.limpar_jogada()
+            
+            if not check:
+                jogadas.append(movimento)
+            
+        # Restaurar valores
+        self.origem = origem
+        self.destino = destino
+        self.movimentos = movimentos
+        
+        # Verifica se seu movimento é 0, se sim é checkmate
+        if not jogadas:
+            return True
         return False
 
     def achar_posicao_rei(self):
@@ -233,13 +241,3 @@ class Board:
         self.origem = None
         self.destino = None
         self.movimentos = None
-        
-    def __deepcopy__(self, memo):
-        # Cria uma nova instância da classe Board
-        new_board = Board()
-        new_board.jogador_da_vez = self.jogador_da_vez
-        new_board.origem = copy.deepcopy(self.origem, memo)
-        new_board.destino = copy.deepcopy(self.destino, memo)
-        new_board.movimentos = copy.deepcopy(self.movimentos, memo)
-        new_board.tabuleiro = [[copy.deepcopy(peca, memo) for peca in linha] for linha in self.tabuleiro]
-        return new_board
