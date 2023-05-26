@@ -1,6 +1,4 @@
 from copy import deepcopy
-from PPlay.board import Board
-
 from PPlay.piece import King
 
 class IA:

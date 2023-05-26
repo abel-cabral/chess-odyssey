@@ -28,13 +28,6 @@ class Piece():
                 return tabuleiro[self.linha][self.coluna].get_possible_moves(tabuleiro)
             case "P":
                 return tabuleiro[self.linha][self.coluna].get_possible_moves(tabuleiro)
-    
-    def promocao_peao(self):
-        if self.color == self.Branca and self.linha == 0:
-            return True
-        elif self.color == self.Preta and self.linha == 7:
-            return True
-        return False
 
     def update_position(self, linha, coluna):
         self.linha = linha
@@ -47,7 +40,7 @@ class Rook(Piece):
     VALUE = 500
     LADO = None
     
-    def __init__(self, linha, coluna, color, lado):
+    def __init__(self, linha, coluna, color, lado="ESQ"):
         self.LADO = lado
         self.PATH = get_asset_path('whiteRook.png' if color == 'W' else 'blackRook.png')
         super(Rook, self).__init__(linha, coluna, color, Rook.PIECE_TYPE, Rook.VALUE)
@@ -342,3 +335,10 @@ class Pawn(Piece):
                     posicoes_possiveis.append((nova_linha, coluna))
 
         return posicoes_possiveis
+    
+    def promocao_peao(self):
+        if self.color == self.Branca and self.linha == 0:
+            return True
+        elif self.color == self.Preta and self.linha == 7:
+            return True
+        return False
