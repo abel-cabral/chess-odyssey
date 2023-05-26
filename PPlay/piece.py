@@ -286,13 +286,13 @@ class King(Piece):
                 temp = board.tabuleiro[self.linha][self.coluna]
                 board.tabuleiro[self.linha][self.coluna] = None
                 board.tabuleiro[self.linha][target_col] = temp
-                is_check = False # board.is_check(self.color)
+                eh_check = False # board.eh_check(self.color)
                 
                 # Desfaz a jogada temporária
                 board.tabuleiro[self.linha][self.coluna] = temp
                 board.tabuleiro[self.linha][target_col] = None
 
-                if is_check:
+                if eh_check:
                     return False
 
         return True

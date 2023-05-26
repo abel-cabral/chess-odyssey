@@ -86,7 +86,6 @@ class Board:
                     janela.blit(peca_imagem, peca_rect)
     # FIM DA INICIALIZAÇÃO
     
-    
     # MOVIMENTACAO
     # Temos que pegar o board atualizado, se usarmos o do self, estaremos apontando para uma versao diferente
     def rotas_movimento(self):
@@ -172,7 +171,7 @@ class Board:
             self.tabuleiro[self.destino[0]][self.destino[1]].update_position(self.destino[0], self.destino[1])
             
         # Segundo verifica se com essa movimentacao houve um check
-        check = self.is_check()
+        check = self.eh_check()
         
         # Terceiro desfaz a movimentacao
         self.tabuleiro[self.origem[0]][self.origem[1]] = peca_original
@@ -182,7 +181,7 @@ class Board:
             
         return check
 
-    def is_check(self):
+    def eh_check(self):
         player = self.jogador_da_vez
         king_position = self.achar_posicao_rei()
         # Verifica se alguma peça do outro jogador pode atacar o rei
@@ -198,8 +197,8 @@ class Board:
                         return True
         return False
     
-    def is_checkmate(self):
-        if not self.is_check():
+    def eh_checkmate(self):
+        if not self.eh_check():
             return False  # Se o rei não está em xeque, então não é checkmate
 
         # Salvar os valores salvos
@@ -230,6 +229,17 @@ class Board:
         
         # Verifica se seu movimento é 0, se sim é checkmate
         if not jogadas:
+            return True
+        return False
+
+    def eh_empate(self):
+        # Conta quantas peças tem no jogo, se forem só duas é empate, são dois reis.
+        contador = 0
+        for linha in self.tabuleiro:
+            for elemento in linha:
+                if elemento is not None:
+                    contador += 1
+        if contador == 2:
             return True
         return False
 

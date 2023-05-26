@@ -21,6 +21,7 @@ def main():
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     clock = pygame.time.Clock()
     tempo_de_jogo = 0
+    running = True
     
     botoes_visiveis = False
     game.desenha_tela(BOARD)
@@ -28,12 +29,14 @@ def main():
     while True:
         dt = clock.tick(60)  # Limita o loop a no máximo 60 frames por segundo
         tempo_de_jogo += dt / 1000.0
+        checkmate = BOARD.eh_checkmate()
+        empate = BOARD.eh_empate()
             
         if BOARD.PROMOVER[0] and not botoes_visiveis:
             botoes_visiveis = True
             game.desenhar_botoes('W')
             
-        if True:
+        if not checkmate and not empate:
             if BOARD.jogador_da_vez == 'W':
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
