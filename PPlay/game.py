@@ -29,7 +29,7 @@ class Game:
         self.desenha_tela(board)
         return board
     
-    def end_game(self, jogador):
+    def end_game(self, jogador, empate):
         # Encerra a música de fundo
         self.sound.stop()
         
@@ -40,16 +40,19 @@ class Game:
         font = self.pygame.font.Font(None, 45)  # Escolha o tamanho da fonte que achar melhor
 
         # Configura a mensagem
-        text = font.render('Fim de Jogo! Você {} :{}'.format('venceu' if jogador == 'W' else 'perdeu', jogador), True, (255, 0, 0))  # Texto, antialiasing e cor (RGB)
+        if empate:
+            text = font.render('EMPATE :|', True, (255, 0, 0))  # Texto, antialiasing e cor (RGB)
+        else:
+            if jogador == 'W':
+                text = font.render('VITÓRIA :)', True, (255, 0, 0))  # Texto, antialiasing e cor (RGB)
+            else:
+                text = font.render('DERROTA :(', True, (255, 0, 0))  # Texto, antialiasing e cor (RGB)
 
         # Configura onde o texto será desenhado
         text_rect = text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))  # Posiciona o texto no centro da tela
 
         # Desenha o texto
         screen.blit(text, text_rect)
-
-        # Atualiza a tela
-        self.pygame.display.update()
         
     def desenha_tela(self, board):
         if not board.PROMOVER[0]:

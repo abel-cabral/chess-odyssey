@@ -100,12 +100,13 @@ def main():
                             BOARD.inverter_jogador()
                             BOARD.limpar_jogada()
                             ia.ia_playing = False
-                        fim_partida = True
+                        else:
+                            fim_partida = True
                     except Exception as e:
                         print("A thread levantou uma exceção:", e)
         else:
             if not botoes_visiveis:
-                game.end_game(BOARD.jogador_da_vez)
+                game.end_game(BOARD.jogador_da_vez, BOARD.eh_empate())
                 game.desenhar_botoes_de_fim()
                 botoes_visiveis = True
                 
@@ -115,12 +116,13 @@ def main():
                         sys.exit()
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         btn = game.peca_selecionada(event.pos)
-                        if btn['text'] == 'Sair':
+                        if btn is not None and btn['text'] == 'Sair':
                             pygame.quit()
                             sys.exit()
-                        elif btn['text'] == 'Reiniciar':
+                        elif btn is not None and btn['text'] == 'Reiniciar':
                             BOARD = game.start()
-                        botoes_visiveis = False
+                            botoes_visiveis = False
+                            fim_partida = False
         if not botoes_visiveis:
             game.desenha_tela(BOARD)
         
