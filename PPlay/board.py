@@ -40,26 +40,24 @@ class Board:
                 
     def posicionar_peças(self):
         pieces = [
-            # [Pawn(1, i, Piece.Preta) for i in range(8)],
-            # [Pawn(6, i, Piece.Branca) for i in range(8)],
-            # Rook(0, 0, Piece.Preta, "ESQ"),
-            # Rook(0, 7, Piece.Preta, "DIR"),
-            # Rook(7, 0, Piece.Branca, "ESQ"),
-            # Rook(7, 7, Piece.Branca, "DIR"),
-            # Knight(0, 1, Piece.Preta),
-            # Knight(0, 6, Piece.Preta),
-            # Knight(7, 1, Piece.Branca),
-            # Knight(7, 6, Piece.Branca),
-            # Bishop(0, 2, Piece.Preta),
-            # Bishop(0, 5, Piece.Preta),
-            # Bishop(7, 2, Piece.Branca),
-            # Bishop(7, 5, Piece.Branca),
+            [Pawn(1, i, Piece.Preta) for i in range(8)],
+            [Pawn(6, i, Piece.Branca) for i in range(8)],
+            Rook(0, 0, Piece.Preta, "ESQ"),
+            Rook(0, 7, Piece.Preta, "DIR"),
+            Rook(7, 0, Piece.Branca, "ESQ"),
+            Rook(7, 7, Piece.Branca, "DIR"),
+            Knight(0, 1, Piece.Preta),
+            Knight(0, 6, Piece.Preta),
+            Knight(7, 1, Piece.Branca),
+            Knight(7, 6, Piece.Branca),
+            Bishop(0, 2, Piece.Preta),
+            Bishop(0, 5, Piece.Preta),
+            Bishop(7, 2, Piece.Branca),
+            Bishop(7, 5, Piece.Branca),
             King(7, 4, Piece.Branca),
             King(0, 4, Piece.Preta),
-            Pawn(1, 0, Piece.Branca),
-            Pawn(6, 0, Piece.Preta)
-            # Queen(7, 3, Piece.Branca),
-            # Queen(0, 3, Piece.Preta)
+            Queen(7, 3, Piece.Branca),
+            Queen(0, 3, Piece.Preta)
         ]
 
         for piece in pieces:
