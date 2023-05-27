@@ -25,18 +25,19 @@ def main():
     
     botoes_visiveis = False
     game.desenha_tela(BOARD)
+    fim_partida = False
     
-    while True:
+    while running:
         dt = clock.tick(60)  # Limita o loop a no máximo 60 frames por segundo
         tempo_de_jogo += dt / 1000.0
-        checkmate = BOARD.eh_checkmate()
-        empate = BOARD.eh_empate()
+        if BOARD.eh_checkmate() or BOARD.eh_empate():
+            fim_partida = True
             
         if BOARD.PROMOVER[0] and not botoes_visiveis:
-            botoes_visiveis = True
-            game.desenhar_botoes('W')
-            
-        if not checkmate and not empate:
+                botoes_visiveis = True
+                game.desenhar_botoes_de_pecas('W')
+                    
+        if not fim_partida:
             if BOARD.jogador_da_vez == 'W':
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -45,9 +46,11 @@ def main():
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         # Botão Pressionado
                         if (BOARD.PROMOVER[0]):
-                            nomePeca = game.botao_clicado(event.pos)
-                            if nomePeca is not None:
-                                nova_peca = eval (nomePeca) (0, 0, BOARD.jogador_da_vez)
+                            btn = game.peca_selecionada(event.pos)
+                            nome_peca = btn['piece']
+                            if nome_peca is not None:
+                                nova_peca = eval (nome_peca) (0, 0, BOARD.jogador_da_vez)
+                                botoes_visiveis = False
                                 BOARD.tabuleiro[BOARD.PROMOVER[1]][BOARD.PROMOVER[2]] = nova_peca
                                 BOARD.PROMOVER[0] = False
                                 BOARD.inverter_jogador()
@@ -87,22 +90,39 @@ def main():
                 if future.done():
                     try:
                         # Movimentacao da IA
-                        source, destination = future.result()
-                        BOARD.origem = source
-                        BOARD.destino = destination
-                        BOARD.mover_elemento()
-                        Sound("assets/music/move.mp3").play()
-                        BOARD.inverter_jogador()
-                        BOARD.limpar_jogada()
-                        ia.ia_playing = False
-                        # Inicie uma nova tarefa, se necessário
-                        future = executor.submit(handle_ai_move, ia, BOARD)
+                        result = future.result()
+                        if result is not None:  
+                            source, destination = result
+                            BOARD.origem = source
+                            BOARD.destino = destination
+                            BOARD.mover_elemento()
+                            Sound("assets/music/move.mp3").play()
+                            BOARD.inverter_jogador()
+                            BOARD.limpar_jogada()
+                            ia.ia_playing = False
+                        fim_partida = True
                     except Exception as e:
                         print("A thread levantou uma exceção:", e)
         else:
-            game.end_game(BOARD.jogador_da_vez)
-        
-        game.desenha_tela(BOARD)
+            if not botoes_visiveis:
+                game.end_game(BOARD.jogador_da_vez)
+                game.desenhar_botoes_de_fim()
+                botoes_visiveis = True
+                
+            for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        btn = game.peca_selecionada(event.pos)
+                        if btn['text'] == 'Sair':
+                            pygame.quit()
+                            sys.exit()
+                        elif btn['text'] == 'Reiniciar':
+                            BOARD = game.start()
+                        botoes_visiveis = False
+        if not botoes_visiveis:
+            game.desenha_tela(BOARD)
         
 
 if __name__ == '__main__':
