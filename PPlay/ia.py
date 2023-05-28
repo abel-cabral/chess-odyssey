@@ -1,5 +1,4 @@
 import time
-from copy import deepcopy
 from PPlay.piece import King
 from PPlay.piece import Queen
 from PPlay.piece import Knight
@@ -63,11 +62,12 @@ QUEEN_POSITION_VALUE = [
 ]
 
 class IA:
-    def __init__(self, cor, profundidade_max=2):
+    def __init__(self, cor, profundidade_max=3, piece_value_weight=2):
         self.cor = cor
-        self.profundidade_max = profundidade_max
+        self.profundidade = profundidade_max
         self.ia_playing = False
         self.movimentos_possiveis = {}
+        self.piece_value_weight = piece_value_weight
 
     def avaliar_posicao(self, board):
         valor = 0
@@ -78,32 +78,30 @@ class IA:
                     if isinstance(peca, King):
                         valor_posicional = 0
                     elif isinstance(peca, Queen):
-                        valor_posicional = QUEEN_POSITION_VALUE[linha][coluna] if isinstance(peca, Queen) else 0
+                        valor_posicional = QUEEN_POSITION_VALUE[linha][coluna]
                     elif isinstance(peca, Rook):
-                        valor_posicional = ROOK_POSITION_VALUE[linha][coluna] if isinstance(peca, Rook) else 0
+                        valor_posicional = ROOK_POSITION_VALUE[linha][coluna]
                     elif isinstance(peca, Bishop):
-                        valor_posicional = BISHOP_POSITION_VALUE[linha][coluna] if isinstance(peca, Bishop) else 0
+                        valor_posicional = BISHOP_POSITION_VALUE[linha][coluna]
                     elif isinstance(peca, Knight):
-                        valor_posicional = KNIGHT_POSITION_VALUE[linha][coluna] if isinstance(peca, Knight) else 0
+                        valor_posicional = KNIGHT_POSITION_VALUE[linha][coluna]
                     elif isinstance(peca, Pawn):
-                        valor_posicional = PAWN_POSITION_VALUE[linha][coluna] if isinstance(peca, Pawn) else 0
+                        valor_posicional = PAWN_POSITION_VALUE[linha][coluna]
                     if peca.color == self.cor:
-                        valor += peca.value + valor_posicional
+                        valor += (peca.value * self.piece_value_weight) + valor_posicional
                     else:
-                        valor -= peca.value + valor_posicional
+                        valor -= (peca.value * self.piece_value_weight) + valor_posicional
         return valor
 
     def mover(self, board):
         self.movimentos_possiveis = self.gerar_jogadas(board)  # Pré-calcular todos os movimentos possíveis
         melhor_jogada = None
-        profundidade = 1
         tempo_inicial = time.time()
-        tempo_maximo = 3
+        tempo_maximo = 5
         while True:  # Você precisará adicionar alguma condição de parada aqui, como um limite de tempo
             try:
-                _, jogada = self.alfa_beta(board, profundidade, float('-inf'), float('inf'), True)
+                _, jogada = self.alfa_beta(board, self.profundidade, float('-inf'), float('inf'), True)
                 melhor_jogada = jogada
-                profundidade += 1
                 tempo_atual = time.time()
                 if tempo_atual - tempo_inicial >= tempo_maximo:
                     break
@@ -119,30 +117,48 @@ class IA:
         if maximizando:
             melhor_valor = float('-inf')
             for jogada in self.movimentos_possiveis:
-                novo_board = deepcopy(board)
-                novo_board.origem = jogada[0]
-                novo_board.destino = jogada[1]
-                novo_board.mover_elemento(False)
-                valor = self.alfa_beta(novo_board, profundidade - 1, alpha, beta, False)[0]
+                peca1 = board.tabuleiro[jogada[0][0]][jogada[0][1]]
+                peca2 = board.tabuleiro[jogada[1][0]][jogada[1][1]]
+                
+                # Faz a simulacao da jogada
+                board.tabuleiro[jogada[0][0]][jogada[0][1]] = None
+                board.tabuleiro[jogada[1][0]][jogada[1][1]] = peca1
+                
+                valor = self.alfa_beta(board, profundidade - 1, alpha, beta, False)[0]
+                
+                # Reseta pra posicao inicial
+                board.tabuleiro[jogada[0][0]][jogada[0][1]] = peca1
+                board.tabuleiro[jogada[1][0]][jogada[1][1]] = peca2
+                
                 if valor > melhor_valor:
                     melhor_valor = valor
                     melhor_jogada = jogada
                 alpha = max(alpha, melhor_valor)
+                
                 if beta <= alpha:
                     break
             return melhor_valor, melhor_jogada
         else:
             melhor_valor = float('inf')
             for jogada in self.movimentos_possiveis:
-                novo_board = deepcopy(board)
-                novo_board.origem = jogada[0]
-                novo_board.destino = jogada[1]
-                novo_board.mover_elemento(False)
-                valor = self.alfa_beta(novo_board, profundidade - 1, alpha, beta, True)[0]
+                peca1 = board.tabuleiro[jogada[0][0]][jogada[0][1]]
+                peca2 = board.tabuleiro[jogada[1][0]][jogada[1][1]]
+                
+                # Faz a simulacao da jogada
+                board.tabuleiro[jogada[0][0]][jogada[0][1]] = None
+                board.tabuleiro[jogada[1][0]][jogada[1][1]] = peca1
+                
+                valor = self.alfa_beta(board, profundidade - 1, alpha, beta, True)[0]
+                
+                # Reseta pra posicao inicial
+                board.tabuleiro[jogada[0][0]][jogada[0][1]] = peca1
+                board.tabuleiro[jogada[1][0]][jogada[1][1]] = peca2
+                
                 if valor < melhor_valor:
                     melhor_valor = valor
                     melhor_jogada = jogada
                 beta = min(beta, melhor_valor)
+                
                 if beta <= alpha:
                     break
             return melhor_valor, melhor_jogada

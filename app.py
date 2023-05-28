@@ -31,7 +31,9 @@ def main():
     while running:
         dt = clock.tick(60)  # Limita o loop a no máximo 60 frames por segundo
         tempo_de_jogo += dt / 1000.0
-        if BOARD.eh_checkmate() or BOARD.eh_empate():
+        checkmate = BOARD.eh_checkmate() 
+        empate = BOARD.eh_empate()
+        if checkmate or empate:
             fim_partida = True
             
         if BOARD.PROMOVER[0] and not botoes_visiveis:
@@ -125,7 +127,7 @@ def main():
                             botoes_visiveis = False
                             fim_partida = False
         
-        if not botoes_visiveis:
+        if not botoes_visiveis and not ia.ia_playing:
             game.desenha_tela(BOARD)
         
 
