@@ -19,7 +19,7 @@ class Game:
     
     def start(self):
         # Musica de fundo
-        self.sound = Sound('assets/music/theme.mp3')
+        self.sound = Sound(get_asset_path('theme.mp3'))
         self.sound.loop = True
         self.sound.play()
         
