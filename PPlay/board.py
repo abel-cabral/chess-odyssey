@@ -14,7 +14,6 @@ class Board:
         self.origem = None
         self.destino = None
         self.movimentos = None
-        #self.posicionar_peças()
     
     def set_origem(self, linha, coluna):
         self.origem = self.matriz_para_uci(linha, coluna)
@@ -56,7 +55,6 @@ class Board:
     # FIM DA INICIALIZAÇÃO
     
     # MOVIMENTACAO
-    # Temos que pegar o board atualizado, se usarmos o do self, estaremos apontando para uma versao diferente
     def rotas_movimento(self):
         movimentos = []
         if self.origem is not None:
@@ -66,103 +64,22 @@ class Board:
         return movimentos
 
     def mover_elemento(self):
-        # Movimenta no tabuleiro lib e atualiza no visual
-        self.tabuleiro_lib.push_uci(self.origem + self.destino)
-        self.tabuleiro_visual = self.board_to_matrix()
+        move = chess.Move.from_uci(self.origem + self.destino)
+        self.tabuleiro_lib.push(move)
+        # Verificar se houve promoção de peça
+        if move.to_square // 8 == 0 or move.to_square // 8 == 7:
+            self.PROMOVER[0] = True
+            self.PROMOVER.append(move)
+        else:
+            self.tabuleiro_visual = self.board_to_matrix()
         self.limpar_jogada()
-                
-    # Preve se o proximo movimento pode gerar Check
-    def prever_check(self, atualizar_pecas=True):
-        # Obter o valor do elemento na posição antiga
-        peca_original = self.tabuleiro_visual[self.origem[0]][self.origem[1]] # Peça Atual
-        peca_misteriosa = self.tabuleiro_visual[self.destino[0]][self.destino[1]] # Pode estar com None ou uma Peça Inimiga
-    
-        # Primeiro move faz a movimentação
-        self.tabuleiro_visual[self.origem[0]][self.origem[1]] = None
-        self.tabuleiro_visual[self.destino[0]][self.destino[1]] = peca_original
-        if atualizar_pecas: # Atualiza na peça sua localizacao
-            self.tabuleiro_visual[self.destino[0]][self.destino[1]].update_position(self.destino[0], self.destino[1])
-            
-        # Segundo verifica se com essa movimentacao houve um check
-        check = self.eh_check()
         
-        # Terceiro desfaz a movimentacao
-        self.tabuleiro_visual[self.origem[0]][self.origem[1]] = peca_original
-        self.tabuleiro_visual[self.destino[0]][self.destino[1]] = peca_misteriosa
-        if atualizar_pecas: # Atualiza na peça sua localizacao
-            self.tabuleiro_visual[self.origem[0]][self.origem[1]].update_position(self.origem[0], self.origem[1])
-            
-        return check
-
-    def eh_check(self):
-        player = self.jogador_da_vez
-        king_position = self.achar_posicao_rei()
-        # Verifica se alguma peça do outro jogador pode atacar o rei
-        for row in range(8):
-            for col in range(8):
-                piece = self.tabuleiro_visual[row][col]
-                if piece is not None and piece.color != player:
-                    if isinstance(piece, King):
-                        possible_moves = piece.get_possible_moves(self)
-                    else:
-                        possible_moves = piece.get_possible_moves(self.tabuleiro_visual)
-                    if king_position in possible_moves:
-                        return True
-        return False
-    
-    def eh_checkmate(self):
-        if not self.eh_check():
-            return False  # Se o rei não está em xeque, então não é checkmate
-
-        # Salvar os valores salvos
-        origem = self.origem
-        destino = self.destino
-        movimentos = self.movimentos
-        
-        # Acha o rei
-        posicao_rei = self.achar_posicao_rei()
-        rei = self.tabuleiro_visual[posicao_rei[0]][posicao_rei[1]]
-        origem = self.origem
-        jogadas = []
-        
-        # Remover jogadas que gerariam check
-        for movimento in rei.get_possible_moves(self):
-            self.origem = (posicao_rei[0], posicao_rei[1])
-            self.destino = (movimento[0], movimento[1])
-            check = self.prever_check()
-            self.limpar_jogada()
-            
-            if not check:
-                jogadas.append(movimento)
-            
-        # Restaurar valores
-        self.origem = origem
-        self.destino = destino
-        self.movimentos = movimentos
-        
-        # Verifica se seu movimento é 0, se sim é checkmate
-        if not jogadas:
-            return True
-        return False
-
-    def eh_empate(self):
-        # Conta quantas peças tem no jogo, se forem só duas é empate, são dois reis.
-        contador = 0
-        for linha in self.tabuleiro_visual:
-            for elemento in linha:
-                if elemento is not None:
-                    contador += 1
-        if contador == 2:
-            return True
-        return False
-
-    def achar_posicao_rei(self):
-        player = self.jogador_da_vez
-        for pecas in self.tabuleiro_visual:
-            for peca in pecas:
-                if isinstance(peca, King) and peca.color == player:
-                    return (peca.linha, peca.coluna)
-        return None
+    def mover_elemento_ia(self, best_move):
+        # Movimenta no tabuleiro lib e atualiza no visual
+        self.tabuleiro_lib.push(best_move)
+        self.tabuleiro_visual = self.board_to_matrix()
+        self.inverter_jogador()
+        self.limpar_jogada()
 
     def inverter_jogador(self):
         self.jogador_da_vez = 'W' if self.tabuleiro_lib.turn else 'B'
@@ -173,7 +90,9 @@ class Board:
         self.movimentos = None
         
     # Mapeam o que acontece na tabela da lib Xadrez para o visual do nosso Xadrez
-
+    def promocao_peao(self):
+        pass
+    
     def piece_to_fullname(self, piece):
         # Cria um dicionário para mapear os tipos de peças para seus nomes completos
         PIECE_NAME = {

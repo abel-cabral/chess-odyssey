@@ -1,6 +1,8 @@
+import threading
 from PPlay.board import Board
 from PPlay.sound import Sound
 import pygame as pygame
+import chess
 
 from PPlay.piece import Bishop, King, Knight, Pawn, Piece, Queen, Rook
 from paths import get_asset_path
@@ -17,19 +19,21 @@ class Game:
         self.janela = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pygame = pygame
     
-    def start(self):
-        # Musica de fundo
-        self.sound = Sound(get_asset_path('theme.mp3'))
-        self.sound.loop = True
-        self.sound.play()
-        
+    def start(self): 
         # Tela e peças
-        board = Board()
-        
-        self.desenha_tela(board)
-        return board
+        self.board = Board()
+        self.desenha_tela(self.board)
+        sound_thread = threading.Thread(target=self.play_sound)
+        sound_thread.start()
+        return self.board
     
-    def end_game(self, jogador, empate):
+    def play_sound(self):
+        # Musica de fundo
+        sound = Sound(get_asset_path('theme.mp3'))
+        sound.loop = True
+        sound.play()
+    
+    def end_game(self):
         # Encerra a música de fundo
         self.sound.stop()
         
@@ -40,10 +44,10 @@ class Game:
         font = self.pygame.font.Font(None, 45)  # Escolha o tamanho da fonte que achar melhor
 
         # Configura a mensagem
-        if empate:
+        if self.board.tabuleiro_lib.is_stalemate():
             text = font.render('EMPATE :|', True, (255, 0, 0))  # Texto, antialiasing e cor (RGB)
         else:
-            if jogador == 'W':
+            if self.board.tabuleiro_lib.turn != chess.WHITE:
                 text = font.render('VITÓRIA :)', True, (255, 0, 0))  # Texto, antialiasing e cor (RGB)
             else:
                 text = font.render('DERROTA :(', True, (255, 0, 0))  # Texto, antialiasing e cor (RGB)
@@ -78,10 +82,10 @@ class Game:
         rook_image = pygame.transform.scale(rook_image, image_size)
 
         promotion_buttons = [
-            {'rect': pygame.Rect(self.SCREEN_WIDTH // 2 - 2 * (BUTTON_WIDTH + BUTTON_PADDING), self.SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT), 'image': bishop_image, 'piece': 'Bishop'},
-            {'rect': pygame.Rect(self.SCREEN_WIDTH // 2 - (BUTTON_WIDTH + BUTTON_PADDING), self.SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT), 'image': knight_image, 'piece': 'Knight'},
-            {'rect': pygame.Rect(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT), 'image': queen_image, 'piece': 'Queen'},
-            {'rect': pygame.Rect(self.SCREEN_WIDTH // 2 + (BUTTON_WIDTH + BUTTON_PADDING), self.SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT), 'image': rook_image, 'piece': 'Rook'},
+            {'rect': pygame.Rect(self.SCREEN_WIDTH // 2 - 2 * (BUTTON_WIDTH + BUTTON_PADDING), self.SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT), 'image': bishop_image, 'piece': 'BISHOP'},
+            {'rect': pygame.Rect(self.SCREEN_WIDTH // 2 - (BUTTON_WIDTH + BUTTON_PADDING), self.SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT), 'image': knight_image, 'piece': 'KNIGHT'},
+            {'rect': pygame.Rect(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT), 'image': queen_image, 'piece': 'QUEEN'},
+            {'rect': pygame.Rect(self.SCREEN_WIDTH // 2 + (BUTTON_WIDTH + BUTTON_PADDING), self.SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT), 'image': rook_image, 'piece': 'ROOK'},
         ]
 
         for button in promotion_buttons:

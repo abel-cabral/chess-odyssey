@@ -1,56 +1,36 @@
-from re import A
 import sys
-import concurrent.futures
-
-import pygame
 from PPlay.board import Board
 from PPlay.game import Game
 from PPlay.piece import Bishop, King, Knight, Pawn, Piece, Queen, Rook
 from PPlay.sound import Sound
 from paths import get_asset_path
 import chess
+import chess.engine
 
 def handle_ai_move(ia, board):
     return ia.mover(board)
 
 def main():
     game = Game('Xadrez (1.0.0)', get_asset_path('blackQueen.png'))
+    engine = chess.engine.SimpleEngine.popen_uci(get_asset_path('stockfish'))
     pygame = game.pygame
-    #ia = IA(cor='B')
     
     # Cria o tabuleiro_visual do jogo
     BOARD = game.start()
-    #BOARD.tabuleiro_lib = chess.BLACK
-    #print(BOARD.tabuleiro_lib)
-    
-    A = BOARD.matriz_para_uci(7, 1)
-    B = BOARD.matriz_para_uci(5, 0)
-    AA = BOARD.uci_para_matriz(A)
-    # B = BOARD.matriz_para_uci(2, 7)
-    BB = BOARD.uci_para_matriz(B)
-    # #AA = BOARD.uci_to_matrix(A+B)
-    #print(BOARD.tabuleiro_lib)
-    # #d7B = BOARD.matrix_to_uci(4, 1)
-    #BOARD.tabuleiro_lib.push_uci(A+B)
     BOARD.tabuleiro_visual = BOARD.board_to_matrix()
-
-    # Cria um objeto Clock para limitar a taxa de quadros do jogo
-    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    game.desenha_tela(BOARD)
+    
     clock = pygame.time.Clock()
     tempo_de_jogo = 0
     running = True
-    
     botoes_visiveis = False
-    game.desenha_tela(BOARD)
     fim_partida = False
     
     while running:
         dt = clock.tick(60)  # Limita o loop a no máximo 60 frames por segundo
         tempo_de_jogo += dt / 1000.0
-        # checkmate = BOARD.eh_checkmate() 
-        # empate = BOARD.eh_empate()
-        # if checkmate or empate:
-        #     fim_partida = True
+        if BOARD.tabuleiro_lib.is_checkmate():
+            fim_partida = True
             
         if BOARD.PROMOVER[0] and not botoes_visiveis:
                 botoes_visiveis = True
@@ -60,17 +40,22 @@ def main():
             if BOARD.jogador_da_vez == 'W':
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        pygame.quit()
                         sys.exit()
+                        break
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         # Botão Pressionado
                         if (BOARD.PROMOVER[0]):
                             btn = game.peca_selecionada(event.pos)
                             nome_peca = btn['piece']
                             if nome_peca is not None:
-                                nova_peca = eval (nome_peca) (0, 0, BOARD.jogador_da_vez)
+                                piece_mapping = {'QUEEN': chess.QUEEN, 'ROOK': chess.ROOK, 'BISHOP': chess.BISHOP, 'KNIGHT': chess.KNIGHT}
                                 botoes_visiveis = False
-                                BOARD.tabuleiro_visual[BOARD.PROMOVER[1]][BOARD.PROMOVER[2]] = nova_peca
+                                
+                                move = BOARD.PROMOVER[1]
+                                cor = chess.WHITE if BOARD.jogador_da_vez == 'W' else chess.BLACK
+                                BOARD.tabuleiro_lib.set_piece_at(move.to_square, chess.Piece(piece_mapping[nome_peca], cor))                                
+                                BOARD.tabuleiro_visual = BOARD.board_to_matrix()
+
                                 BOARD.PROMOVER[0] = False
                                 BOARD.inverter_jogador()
                                 BOARD.limpar_jogada()
@@ -98,34 +83,13 @@ def main():
                                 if not BOARD.PROMOVER[0]:
                                     BOARD.inverter_jogador()     
             else:
-                pass
-                # # Inicia o thread da IA.
-                # if not ia.ia_playing:
-                #     ia, BOARD
-                #     future = executor.submit(handle_ai_move, ia, BOARD)
-                #     ia.ia_playing = True
-
-                # # Verifique se a tarefa da IA terminou
-                # if future.done():
-                #     try:
-                #         # Movimentacao da IA
-                #         result = future.result()
-                #         if result is not None:  
-                #             source, destination = result
-                #             BOARD.origem = source
-                #             BOARD.destino = destination
-                #             BOARD.mover_elemento()
-                #             Sound(get_asset_path('move.mp3')).play()
-                #             BOARD.inverter_jogador()
-                #             BOARD.limpar_jogada()
-                #             ia.ia_playing = False
-                #         else:
-                #             fim_partida = True
-                #     except Exception as e:
-                #         print("A thread levantou uma exceção:", e)
+                # SISTEMAS MAC
+                result = engine.play(BOARD.tabuleiro_lib, chess.engine.Limit(time=2.0))
+                best_move = result.move
+                BOARD.mover_elemento_ia(best_move)
         else:
             if not botoes_visiveis:
-                game.end_game(BOARD.jogador_da_vez, BOARD.eh_empate())
+                game.end_game()
                 game.desenhar_botoes_de_fim()
                 botoes_visiveis = True
                 
@@ -143,7 +107,7 @@ def main():
                             botoes_visiveis = False
                             fim_partida = False
         
-        if not botoes_visiveis: #and not ia.ia_playing:
+        if not botoes_visiveis:
             game.desenha_tela(BOARD)
         
 
