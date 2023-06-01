@@ -17,12 +17,12 @@ class Game:
         pygame.display.set_icon(pygame.image.load(icon_path))
         self.janela = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pygame = pygame
-        self.sound = Sound(get_asset_path('theme.ogg'), pygame)
     
     def start(self): 
         # Tela e peças
         self.board = Board()
         self.desenha_tela(self.board)
+        self.sound = Sound(get_asset_path('theme.ogg'), self.pygame)
         self.play_sound()
         return self.board
     

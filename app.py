@@ -35,8 +35,8 @@ def main():
             if BOARD.jogador_da_vez == 'W':
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
+                        pygame.quit()
                         os._exit(0)
-                        break
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         # Botão Pressionado
                         if (BOARD.PROMOVER[0]):
