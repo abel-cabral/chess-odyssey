@@ -33,33 +33,33 @@ class Piece():
 
 class Rook(Piece):
     def __init__(self, posicao, color):
-        self.PATH = get_asset_path('whiteRook.png' if color == 'W' else 'blackRook.png')
+        self.PATH = get_asset_path('pieces/64_07.png' if color == 'W' else 'pieces/64_01.png')
         super(Rook, self).__init__(posicao, color)
     
 
 class Knight(Piece):
    def __init__(self, posicao, color):
-        self.PATH = get_asset_path('whiteKnight.png' if color == 'W' else 'blackKnight.png')
+        self.PATH = get_asset_path('pieces/64_08.png' if color == 'W' else 'pieces/64_02.png')
         super(Knight, self).__init__(posicao, color)
 
 class Bishop(Piece):
     def __init__(self, posicao, color):
-        self.PATH = get_asset_path('whiteBishop.png' if color == 'W' else 'blackBishop.png')
+        self.PATH = get_asset_path('pieces/64_09.png' if color == 'W' else 'pieces/64_03.png')
         super(Bishop, self).__init__(posicao, color)
 
 class Queen(Piece):
     def __init__(self, posicao, color):
-        self.PATH = get_asset_path('whiteQueen.png' if color == 'W' else 'blackQueen.png')
+        self.PATH = get_asset_path('pieces/64_10.png' if color == 'W' else 'pieces/64_04.png')
         super(Queen, self).__init__(posicao, color)
 
 class King(Piece):
     def __init__(self, posicao, color):
-        self.PATH = get_asset_path('whiteKing.png' if color == 'W' else 'blackKing.png')
+        self.PATH = get_asset_path('pieces/64_11.png' if color == 'W' else 'pieces/64_05.png')
         super(King, self).__init__(posicao, color)
 
 class Pawn(Piece):
     def __init__(self, posicao, color):
-        self.PATH = get_asset_path('whitePawn.png' if color == 'W' else 'blackPawn.png')
+        self.PATH = get_asset_path('pieces/64_12.png' if color == 'W' else 'pieces/64_06.png')
         super(Pawn, self).__init__(posicao, color)
           
     def promocao_peao(self):

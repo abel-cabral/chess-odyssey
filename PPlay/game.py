@@ -22,7 +22,7 @@ class Game:
         # Tela e peças
         self.board = Board()
         self.desenha_tela(self.board)
-        self.sound = Sound(get_asset_path('theme.ogg'), self.pygame)
+        self.sound = Sound(get_asset_path('music/theme.ogg'), self.pygame)
         self.play_sound()
         return self.board
     
@@ -37,7 +37,7 @@ class Game:
         screen = self.pygame.display.get_surface()  # Obtém a superfície atual
 
         # Configura a fonte
-        font = self.pygame.font.Font(None, 45)  # Escolha o tamanho da fonte que achar melhor
+        font = self.pygame.font.Font(None, 128)  # Escolha o tamanho da fonte que achar melhor
 
         # Configura a mensagem
         if self.board.tabuleiro_lib.is_stalemate():
