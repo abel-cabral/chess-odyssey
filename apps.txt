@@ -1,6 +1,11 @@
-Criando app Mac:
+Criando .app Mac:
+    brew install upx (ajuda a comprimir os binarios)
     # Cria o .app a partir do Chess.spec
         - pyinstaller chess.spec
 
     # Fazendo o DMG (Instalado por arraste e solte):
         - create-dmg --volname "Xadrez" --window-pos 200 120 --window-size 800 400 --icon-size 100 --icon Xadrez.app 200 150 --hide-extension Xadrez.app --app-drop-link 600 150 --volicon "chess.icns" dist/chess.dmg dist/Xadrez.app
+
+
+Criar .exe Windows:
+    - pyinstaller chess.spec

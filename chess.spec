@@ -1,5 +1,5 @@
 block_cipher = None
-app_icon = './assets/chess.icns'
+app_icon = 'assets/chess.icns'
 
 a = Analysis(
     ['app.py'],
@@ -10,7 +10,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['numpy', 'pandas'],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -30,6 +30,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
+    icon=app_icon,
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,
