@@ -1,4 +1,4 @@
-import sys
+import os
 from PPlay.game import Game
 from PPlay.sound import Sound
 from paths import get_asset_path
@@ -35,7 +35,7 @@ def main():
             if BOARD.jogador_da_vez == 'W':
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        sys.exit()
+                        os._exit(0)
                         break
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         # Botão Pressionado
@@ -79,6 +79,7 @@ def main():
                                     BOARD.inverter_jogador()     
             else:
                 # SISTEMAS MAC
+                fim_partida = True
                 result = engine.play(BOARD.tabuleiro_lib, chess.engine.Limit(time=2.0))
                 best_move = result.move
                 BOARD.mover_elemento_ia(best_move)
@@ -91,12 +92,12 @@ def main():
             for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()
-                        sys.exit()
+                        os._exit(0)
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         btn = game.peca_selecionada(event.pos)
                         if btn is not None and btn['text'] == 'Sair':
                             pygame.quit()
-                            sys.exit()
+                            os._exit(0)
                         elif btn is not None and btn['text'] == 'Reiniciar':
                             BOARD = game.start()
                             botoes_visiveis = False
