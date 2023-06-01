@@ -6,8 +6,8 @@ import chess
 import chess.engine
 
 def main():
-    game = Game('Xadrez 2.0.0', get_asset_path('../chess.ico'))
-    engine = chess.engine.SimpleEngine.popen_uci(get_asset_path('./stockfish'))
+    game = Game('Xadrez 2.0.0', get_asset_path('chess.ico'))
+    engine = chess.engine.SimpleEngine.popen_uci(get_asset_path('stockfish'))
     pygame = game.pygame
     
     # Cria o tabuleiro_visual do jogo
@@ -74,7 +74,7 @@ def main():
 
                             if BOARD.origem is not None and BOARD.destino is not None:
                                 BOARD.mover_elemento()
-                                Sound(get_asset_path('./music/move.ogg'), pygame).play()
+                                Sound(get_asset_path('music/move.ogg'), pygame).play()
                                 if not BOARD.PROMOVER[0]:
                                     BOARD.inverter_jogador()     
             else:
@@ -83,7 +83,7 @@ def main():
                 result = engine.play(BOARD.tabuleiro_lib, chess.engine.Limit(time=2.0))
                 best_move = result.move
                 BOARD.mover_elemento_ia(best_move)
-                Sound(get_asset_path('./music/move.ogg'), pygame).play()
+                Sound(get_asset_path('music/move.ogg'), pygame).play()
         else:
             if not botoes_visiveis:
                 game.end_game()

@@ -1,11 +1,11 @@
 block_cipher = None
-app_icon = 'chess.icns'
+app_icon = './assets/chess.icns'
 
 a = Analysis(
     ['app.py'],
     pathex=[],
     binaries=[],
-    datas=[('assets/*', 'assets')],
+    datas=[('*', 'assets')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
