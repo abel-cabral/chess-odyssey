@@ -10,7 +10,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['tkinter', 'pandas'],
+    excludes=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -25,7 +25,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='Chess',
+    name='Xadrez',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -41,7 +41,7 @@ exe = EXE(
 )
 app = BUNDLE(
     exe,
-    name='Chess.app',
+    name='Xadrez.app',
     icon=app_icon,
-    bundle_identifier='com.abel.Chess',
+    bundle_identifier='com.abel.xadrez',
 )

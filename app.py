@@ -1,14 +1,9 @@
 import sys
-from PPlay.board import Board
 from PPlay.game import Game
-from PPlay.piece import Bishop, King, Knight, Pawn, Piece, Queen, Rook
 from PPlay.sound import Sound
 from paths import get_asset_path
 import chess
 import chess.engine
-
-def handle_ai_move(ia, board):
-    return ia.mover(board)
 
 def main():
     game = Game('Xadrez (1.0.0)', get_asset_path('blackQueen.png'))
@@ -79,7 +74,7 @@ def main():
 
                             if BOARD.origem is not None and BOARD.destino is not None:
                                 BOARD.mover_elemento()
-                                Sound(get_asset_path('move.mp3')).play()
+                                Sound(get_asset_path('move.ogg'), pygame).play()
                                 if not BOARD.PROMOVER[0]:
                                     BOARD.inverter_jogador()     
             else:

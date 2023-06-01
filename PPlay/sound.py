@@ -1,26 +1,22 @@
-# coding= utf-8
-
-import pygame
-import pygame.mixer
-
-# Initizalizes pygame's modules
-pygame.init()
-"""Sound é uma classe de controle dos sons do jogo - efeitos, música"""
 class Sound():
     """ATENÇÃO! O arquivo passado deve ser .OGG!!! Se não pode gerar problemas."""
-    def __init__(self, sound_file):
-        self.loop = False
-        self.sound_file = sound_file
+    def __init__(self, music_file, pygame):
+        self.pygame = pygame
         self.volume = 50
-        self.sound = self.load(sound_file)
+        self.loop = False
+        
+        # To reduce audio delay
+        self.pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
+        self.music_file = music_file
+        self.load()
         self.set_volume(self.volume)
 
-        # To reduce audio delay
-        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
-
-    def load(self, sound_file):
-        if(pygame.mixer):
-            return pygame.mixer.Sound(sound_file)
+    def load(self):
+        try:
+            # self.pygame.mixer.Sound(self.music_file)
+            self.pygame.mixer.music.load(self.music_file)
+        except self.pygame.error:
+            print("Erro ao carregar arquivo: ", self.music_file)
 
     """Value deve ser um valor entre 0 e 100"""
     def set_volume(self, value):
@@ -30,7 +26,7 @@ class Sound():
             value = 0
 
         self.volume = value
-        self.sound.set_volume(value/100)
+        self.pygame.mixer.music.set_volume(value/100)
 
     def increase_volume(self, value):
         self.set_volume(self.volume + value)
@@ -39,30 +35,27 @@ class Sound():
         self.set_volume(self.volume - value)
 
     def is_playing(self):
-        if(pygame.mixer.get_busy()):
+        if(self.pygame.mixer.get_busy()):
             return True
         else:
             return False
 
     def pause(self):
-        pygame.mixer.pause()
+        self.pygame.mixer.pause()
 
     def unpause(self):
-        pygame.mixer.unpause()
+        self.pygame.mixer.unpause()
 
     def play(self):
-        if(self.loop):
-            self.sound.play(-1)
-        else:
-            self.sound.play()
-
+        self.pygame.mixer.music.play()
+        
     def stop(self):
-        self.sound.stop()
+        self.pygame.mixer.music.stop()
 
     def set_repeat(self, repeat):
         self.loop = repeat
 
     def fadeout(self, time_ms):
-       self.sound.fadeout(time_ms)
+       self.pygame.mixer.music.fadeout(time_ms)
 
 

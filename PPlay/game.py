@@ -1,4 +1,3 @@
-import threading
 from PPlay.board import Board
 from PPlay.sound import Sound
 import pygame as pygame
@@ -18,20 +17,17 @@ class Game:
         pygame.display.set_icon(pygame.image.load(icon_path))
         self.janela = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pygame = pygame
+        self.sound = Sound(get_asset_path('theme.ogg'), pygame)
     
     def start(self): 
         # Tela e peças
         self.board = Board()
         self.desenha_tela(self.board)
-        sound_thread = threading.Thread(target=self.play_sound)
-        sound_thread.start()
+        self.play_sound()
         return self.board
     
     def play_sound(self):
-        # Musica de fundo
-        sound = Sound(get_asset_path('theme.mp3'))
-        sound.loop = True
-        sound.play()
+        self.sound.play()
     
     def end_game(self):
         # Encerra a música de fundo
@@ -99,32 +95,30 @@ class Game:
     def desenhar_botoes_de_fim(self):
         BUTTON_WIDTH = BUTTON_HEIGHT = 96
         BUTTON_PADDING = 24
-        
 
         # Calcula a posição horizontal central dos botões
         total_width = 2 * (BUTTON_WIDTH + BUTTON_PADDING)
         start_x = self.SCREEN_WIDTH // 2 - total_width // 2
 
-        # Calcula a posição vertical central dos botões com base no tamanho do tabuleiro
-        board_size = self.SCREEN_WIDTH if self.SCREEN_WIDTH < self.SCREEN_HEIGHT else self.SCREEN_HEIGHT
-        start_y = board_size // 2 - BUTTON_HEIGHT // 2
-        button_exit = board_size // 2
-        button_restart = board_size // 2
+        # Calcula a posição vertical dos botões para estar abaixo do texto
+        text_height = 45  # A altura do texto que você usou em 'end_game'
+        start_y = self.SCREEN_HEIGHT // 2 + text_height + BUTTON_PADDING  # Adicione o espaço adicional que você deseja abaixo do texto
 
         end_buttons = [
-            {'rect': pygame.Rect(start_y, start_y, BUTTON_WIDTH, BUTTON_HEIGHT), 'text': 'Reiniciar'},
-            {'rect': pygame.Rect(button_exit + BUTTON_WIDTH, button_exit, BUTTON_WIDTH, BUTTON_HEIGHT), 'text': 'Sair'}
+            {'rect': pygame.Rect(start_x, start_y, BUTTON_WIDTH, BUTTON_HEIGHT), 'text': 'Reiniciar'},
+            {'rect': pygame.Rect(start_x + BUTTON_WIDTH + BUTTON_PADDING, start_y, BUTTON_WIDTH, BUTTON_HEIGHT), 'text': 'Sair'}
         ]
-        
+
         for button in end_buttons:
             pygame.draw.circle(self.janela, (255, 255, 255), button['rect'].center, button['rect'].width // 2)
             font = pygame.font.Font(None, 24)  # Escolha o tamanho e a fonte do texto
             text = font.render(button['text'], True, (0, 0, 0))  # Crie uma superfície de texto com o texto desejado e a cor preta
             text_rect = text.get_rect(center=button['rect'].center)  # Posicione o texto no centro do botão
             self.janela.blit(text, text_rect)
-        
+
         self.BOTOES = end_buttons
         self.pygame.display.update()
+
     
     # Descobre qual botão foi clicado e retorna o nome da peça
     def peca_selecionada(self, pos):
