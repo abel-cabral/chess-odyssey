@@ -1,9 +1,11 @@
 from paths import get_asset_path
 import chess
+import copy
 
 class Piece():
     Branca = "W"
     Preta = "B"
+    VISIBLE = True
 
     def __init__(self, square, color):
         self.color = color
@@ -30,6 +32,9 @@ class Piece():
         self.linha = linha
         self.coluna = coluna
         self.first_move = False
+        
+    def clone(self):
+        return copy.deepcopy(self)
 
 class Rook(Piece):
     def __init__(self, posicao, color):

@@ -46,12 +46,13 @@ class Board:
                 y = linha * self.TAMANHO_QUADRADO
                 # Desenha a peça na posição inicial correspondente na matriz
                 if self.tabuleiro_visual[linha] is not None and self.tabuleiro_visual[linha][coluna] is not None:
-                    peca_imagem = pygame.image.load(self.tabuleiro_visual[linha][coluna].PATH)
-                    # Obtém um objeto Rect que representa a imagem da peça e define sua posição central como o centro do quadrado
-                    peca_rect = peca_imagem.get_rect()
-                    peca_rect.center = (x + self.TAMANHO_QUADRADO // 2, y + self.TAMANHO_QUADRADO // 2)
-                    # Desenha a imagem da peça na tela
-                    janela.blit(peca_imagem, peca_rect)
+                    if self.tabuleiro_visual[linha][coluna].VISIBLE:
+                        peca_imagem = pygame.image.load(self.tabuleiro_visual[linha][coluna].PATH)
+                        # Obtém um objeto Rect que representa a imagem da peça e define sua posição central como o centro do quadrado
+                        peca_rect = peca_imagem.get_rect()
+                        peca_rect.center = (x + self.TAMANHO_QUADRADO // 2, y + self.TAMANHO_QUADRADO // 2)
+                        # Desenha a imagem da peça na tela
+                        janela.blit(peca_imagem, peca_rect)
     # FIM DA INICIALIZAÇÃO
     
     # MOVIMENTACAO
