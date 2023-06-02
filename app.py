@@ -13,6 +13,7 @@ def main():
     # Cria o tabuleiro_visual do jogo
     BOARD = game.start()
     BOARD.tabuleiro_visual = BOARD.board_to_matrix()
+    move_sound = Sound(get_asset_path('music/move.ogg'), pygame)
     game.desenha_tela(BOARD)
     
     clock = pygame.time.Clock()
@@ -74,7 +75,7 @@ def main():
 
                             if BOARD.origem is not None and BOARD.destino is not None:
                                 BOARD.mover_elemento()
-                                Sound(get_asset_path('music/move.ogg'), pygame).play()
+                                move_sound.play_som()
                                 if not BOARD.PROMOVER[0]:
                                     BOARD.inverter_jogador()     
             else:
@@ -83,7 +84,7 @@ def main():
                 result = engine.play(BOARD.tabuleiro_lib, chess.engine.Limit(time=2.0))
                 best_move = result.move
                 BOARD.mover_elemento_ia(best_move)
-                Sound(get_asset_path('music/move.ogg'), pygame).play()
+                move_sound.play_som()
         else:
             if not botoes_visiveis:
                 game.end_game()

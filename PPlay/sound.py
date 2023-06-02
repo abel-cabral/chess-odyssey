@@ -8,7 +8,6 @@ class Sound():
         # To reduce audio delay
         self.pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
         self.music_file = music_file
-        self.load()
         self.set_volume(self.volume)
 
     def load(self):
@@ -46,9 +45,14 @@ class Sound():
     def unpause(self):
         self.pygame.mixer.unpause()
 
-    def play(self):
+    def play_trilha_sonora(self):
+        self.load()
         self.pygame.mixer.music.play()
-        
+    
+    def play_som(self):
+        sound = self.pygame.mixer.Sound(self.music_file)
+        sound.play()
+    
     def stop(self):
         self.pygame.mixer.music.stop()
 

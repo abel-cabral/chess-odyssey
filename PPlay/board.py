@@ -24,7 +24,7 @@ class Board:
     def desenhar_tabuleiro(self, pygame, janela):
         COR1 = (255, 244, 139) # Player 1
         COR2 = (117, 59, 39) # Player 2
-        COR3 = (255, 0, 0) # Selecionado
+        COR3 = (50, 190, 50) # Selecionado
         
         # Calcula a posição do quadrado na tela
         for linha in range(8):

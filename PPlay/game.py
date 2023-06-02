@@ -1,6 +1,6 @@
 from PPlay.board import Board
 from PPlay.sound import Sound
-import pygame as pygame
+import pygame
 import chess
 
 from PPlay.piece import Bishop, King, Knight, Pawn, Piece, Queen, Rook
@@ -22,12 +22,12 @@ class Game:
         # Tela e peças
         self.board = Board()
         self.desenha_tela(self.board)
-        self.sound = Sound(get_asset_path('music/theme.ogg'), self.pygame)
+        self.sound = Sound(get_asset_path('music/theme.ogg'), pygame)
         self.play_sound()
         return self.board
     
     def play_sound(self):
-        self.sound.play()
+        self.sound.play_trilha_sonora()
     
     def end_game(self):
         # Encerra a música de fundo
@@ -58,7 +58,7 @@ class Game:
         if not board.PROMOVER[0]:
             board.desenhar_tabuleiro(self.pygame, self.janela)
             board.desenhar_pecas(self.pygame, self.janela)
-            self.pygame.display.update()
+            self.pygame.display.flip()
             
         
     def desenhar_botoes_de_pecas(self, color):
@@ -90,7 +90,7 @@ class Game:
             self.janela.blit(button['image'], image_pos)
             
         self.BOTOES = promotion_buttons
-        self.pygame.display.update()
+        self.pygame.display.flip()
         
     def desenhar_botoes_de_fim(self):
         BUTTON_WIDTH = BUTTON_HEIGHT = 96
@@ -117,7 +117,7 @@ class Game:
             self.janela.blit(text, text_rect)
 
         self.BOTOES = end_buttons
-        self.pygame.display.update()
+        self.pygame.display.flip()
 
     
     # Descobre qual botão foi clicado e retorna o nome da peça
