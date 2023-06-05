@@ -1,2 +1,2 @@
-pygame
-chess
+pygame==2.4.0
+chess==1.7.0

@@ -9,3 +9,6 @@ Criando .app Mac:
 
 Criar .exe Windows:
     - pyinstaller chess.spec
+
+
+rm -fr build dist && pyinstaller chess.spec && cd /Users/abel/Project/Pessoal/Xadrez/dist/Xadrez.app/Contents/MacOS/ && ./Xadrez

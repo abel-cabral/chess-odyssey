@@ -5,7 +5,13 @@ a = Analysis(
     ['app.py'],
     pathex=[],
     binaries=[],
-    datas=[('*', 'assets')],
+    datas=[
+        ('assets/stockfish', 'assets'),
+        ('assets/chess.ico', 'assets'),
+        ('assets/chess.icns', 'assets'),
+        ('assets/pieces/*.png', 'assets/pieces'),
+        ('assets/music/*.ogg', 'assets/music')
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

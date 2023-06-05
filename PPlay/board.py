@@ -68,11 +68,6 @@ class Board:
         move = chess.Move.from_uci(self.origem + self.destino)
         self.tabuleiro_lib.push(move)
         
-        # Verifique a peça na posição de origem
-        
-        
-        # Verificar se houve promoção de peça e se é peão
-        
         # Jogador Branco cruzou a tela
         peca = self.tabuleiro_lib.piece_at(move.from_square)
         if peca is not None and peca.piece_type == chess.PAWN and (move.to_square // 8 == 0 or move.to_square // 8 == 7):
