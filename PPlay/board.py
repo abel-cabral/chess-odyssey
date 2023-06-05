@@ -22,8 +22,8 @@ class Board:
     
     # PREPARAR XADREZ PARA INICIO DO JOGO, GRAFICO + POSICOES DAS PEÇAS    
     def desenhar_tabuleiro(self, pygame, janela):
-        COR1 = (255, 244, 139) # Player 1
-        COR2 = (117, 59, 39) # Player 2
+        COR1 = (255, 255, 240) # Player 1
+        COR2 = (47, 79, 79) # Player 2
         COR3 = (50, 190, 50) # Selecionado
         
         # Calcula a posição do quadrado na tela
