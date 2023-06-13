@@ -4,3 +4,5 @@ dist
 build
 chess
 .vscode
+assets/stockfish
+assets/stockfish.exe
