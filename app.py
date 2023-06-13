@@ -4,6 +4,26 @@ from PPlay.sound import Sound
 from paths import get_asset_path
 import chess
 import chess.engine
+import platform
+import shutil
+
+def definir_stockfish():
+    sistema_operacional = platform.system()
+    destino_arquivo = get_asset_path('stockfish')
+
+    if os.path.exists(destino_arquivo):
+        # O arquivo 'stockfish' já existe, não é necessário fazer nada
+        return
+
+    if sistema_operacional == 'Windows':
+        caminho_arquivo = get_asset_path('win.exe')
+        destino_arquivo += '.exe'  # Adiciona a extensão '.exe' no sistema Windows
+    elif sistema_operacional == 'Linux':
+        caminho_arquivo = get_asset_path('linux')
+    else:
+        caminho_arquivo = get_asset_path('mac')
+
+    shutil.copy(caminho_arquivo, destino_arquivo)
 
 def main():
     game = Game('Xadrez 2.0.0', get_asset_path('chess.ico'))
@@ -128,4 +148,5 @@ def main():
             game.desenha_tela(BOARD)
 
 if __name__ == '__main__':
+    definir_stockfish()
     main()
