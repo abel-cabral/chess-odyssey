@@ -1,16 +1,15 @@
-# ChessMasterAI
+# Chess Odyssey
 
 ## Descrição
-ChessMasterAI é um jogo de xadrez interativo desenvolvido em Python utilizando a biblioteca Pygame. Este projeto foi criado como parte de uma disciplina de Desenvolvimento de Software do curso de Sistemas de Informação, onde o foco foi aprender sobre o ciclo de vida do desenvolvimento de software, incluindo planejamento, mensuração de tempo e organização de entregas. O jogo apresenta um modo de jogo onde um jogador humano desafia uma inteligência artificial (IA) otimizada pelo uso do motor de xadrez Stockfish.
+Chess Odyssey é um jogo de xadrez interativo desenvolvido em Python utilizando a biblioteca Pygame. Este projeto foi criado como parte de uma disciplina de Desenvolvimento de Software do curso de Sistemas de Informação, onde o foco foi aprender sobre o ciclo de vida do desenvolvimento de software, incluindo planejamento, mensuração de tempo e organização de entregas. O jogo apresenta um modo de jogo onde um jogador humano desafia uma inteligência artificial (IA) otimizada pelo uso do motor de xadrez Stockfish.
 
 ## Stockfish: A Escolha de IA para Xadrez
 Stockfish é um motor de xadrez de código aberto extremamente poderoso, conhecido por sua capacidade de análise profunda e velocidade, tornando-o uma excelente escolha para fortalecer a experiência de jogo em ChessMasterAI.
 
 ## Recursos
 - Modo de Jogo Único**: Enfrente a IA desafiadora em um jogo de xadrez.
-- Níveis de Dificuldade**: Escolha entre vários níveis de dificuldade para adequar o desafio à sua habilidade.
 - Interface Gráfica e Sonora**: Aproveite uma interface simplificada com música de fundo que acompanha a jogabilidade.
-- Compatibilidade**: Jogue no macOS (arquivo DMG) e Windows (executável), com uma versão adicional disponível para terminal para desenvolvedores.
+- Compatibilidade**: Jogue no macOS (arquivo DMG) e Windows (executável), com uma versão adicional disponível para desenvolvedores.
 
 ## Instalação e Execução
 
@@ -50,6 +49,7 @@ python3 app.py
 1. Instale o UPX para ajudar a comprimir os binários:
 ```bash
 brew install upx
+brew install create-dmg
 ```
 
 2. Crie o .app usando PyInstaller com a especificação dada:
@@ -77,7 +77,7 @@ rm -fr build dist && pyinstaller chess.spec
 
 Para executar o jogo diretamente no macOS a partir da raiz do projeto:
 ```bash
-cd dist/Xadrez.app/Contents/MacOS/ && ./Xadrez
+cd dist/Chess Odyssey.app/Contents/MacOS/ && ./Chess Odyssey
 ```
 
 ## Licença

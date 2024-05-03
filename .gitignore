@@ -6,3 +6,4 @@ chess
 .vscode
 assets/stockfish
 assets/stockfish.exe
+**/*.DS_Store

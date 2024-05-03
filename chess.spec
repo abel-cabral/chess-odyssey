@@ -31,7 +31,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='Xadrez',
+    name='Chess Odyssey',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -48,7 +48,7 @@ exe = EXE(
 )
 app = BUNDLE(
     exe,
-    name='Xadrez.app',
+    name='Chess Odyssey.app',
     icon=app_icon,
-    bundle_identifier='com.abel.xadrez',
+    bundle_identifier='com.abel.chess_odyssey',
 )

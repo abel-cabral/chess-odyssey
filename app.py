@@ -26,7 +26,7 @@ def definir_stockfish():
     shutil.copy(caminho_arquivo, destino_arquivo)
 
 def main():
-    game = Game('Xadrez 2.0.0', get_asset_path('chess.ico'))
+    game = Game('Chess Odyssey 1.0.0', get_asset_path('chess.ico'))
     engine = chess.engine.SimpleEngine.popen_uci(get_asset_path('stockfish'))
     pygame = game.pygame
     

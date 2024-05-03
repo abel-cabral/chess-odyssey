@@ -20,7 +20,7 @@ class Board:
         self.movimentos = self.rotas_movimento()
 
     
-    # PREPARAR XADREZ PARA INICIO DO JOGO, GRAFICO + POSICOES DAS PEÇAS    
+    # PREPARAR JOGO PARA INICIO DO JOGO, GRAFICO + POSICOES DAS PEÇAS    
     def desenhar_tabuleiro(self, pygame, janela):
         COR1 = (255, 255, 240) # Player 1
         COR2 = (47, 79, 79) # Player 2
@@ -92,7 +92,7 @@ class Board:
         self.destino = None
         self.movimentos = None
         
-    # Mapeam o que acontece na tabela da lib Xadrez para o visual do nosso Xadrez
+    # Mapeam o que acontece na tabela da lib chess para o visual do nosso jogo
     def piece_to_fullname(self, piece):
         # Cria um dicionário para mapear os tipos de peças para seus nomes completos
         PIECE_NAME = {
