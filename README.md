@@ -113,6 +113,6 @@ Distribuído sob a licença MIT. Veja LICENSE para mais informações.
 
 ## Contato
 
-Abel Cabral de Arruda - https://github.com/abel-cabral
+https://github.com/abel-cabral
 
 abel-cabral@outlook.com
