@@ -4,6 +4,13 @@
 
 Chess Odyssey é um jogo de xadrez interativo desenvolvido em Python utilizando a biblioteca Pygame. Este projeto foi criado como parte de uma disciplina de Desenvolvimento de Software do curso de Sistemas de Informação, onde o foco foi aprender sobre o ciclo de vida do desenvolvimento de software, incluindo planejamento, mensuração de tempo e organização de entregas. O jogo apresenta um modo de jogo onde um jogador humano desafia uma inteligência artificial (IA) otimizada pelo uso do motor de xadrez Stockfish.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/abel-cabral/chess-odyssey/main/assets/start.png" width="45%"/>
+  &nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/abel-cabral/chess-odyssey/main/assets/end.png" width="45%"/> 
+</p>
+
+
 ## Stockfish: A Escolha de IA para Xadrez
 
 Stockfish é um motor de xadrez de código aberto extremamente poderoso, conhecido por sua capacidade de análise profunda e velocidade, tornando-o uma excelente escolha para fortalecer a experiência de jogo em ChessMasterAI.
